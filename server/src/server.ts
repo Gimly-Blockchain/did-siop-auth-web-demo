@@ -10,13 +10,13 @@ const secret = process.env.COOKIE_SIGNING_KEY;
 app.use(cookieParser(secret));
 
 // This displays message that the server running and listening to specified port
-app.listen(port, () => console.log(`Listening on port ${port}`)); //Line 6
+app.listen(port, () => console.log(`Listening on port ${port}`));
 
 // create a GET route
-app.get('/authenticate', (req, res) => { //Line 9
+app.get('/authenticate', (request, response) => {
   const options = {
     signed: true
   };
 
-  res.cookie('auth-state', 'authenticated', options).send({ authenticated: true });
-}); //Line 11
+  response.cookie('auth-state', 'authenticated', options).send({authenticated: true});
+});
