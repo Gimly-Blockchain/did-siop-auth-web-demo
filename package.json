@@ -1,38 +1,18 @@
 {
   "name": "onto-web-demo",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^11.1.0",
-    "@testing-library/user-event": "^12.1.10",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-scripts": "4.0.3",
-    "web-vitals": "^1.0.1"
-  },
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "ISC",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start-server": "cd server && yarn run start",
+    "start-client": "cd client && yarn run start",
+    "build": "cd client && yarn run build",
+    "start": "concurrently \"yarn start-server\" \"yarn start-client\""
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+  "dependencies": {
+    "dotenv-flow": "^3.2.0"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "devDependencies": {
+    "concurrently": "^1.0.0"
   }
 }
