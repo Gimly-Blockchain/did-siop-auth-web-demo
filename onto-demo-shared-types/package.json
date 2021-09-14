@@ -1,0 +1,17 @@
+{
+  "name": "onto-demo-shared-types",
+  "version": "1.0.3",
+  "description": "Shared types between modules",
+  "main": "index.js",
+  "author": "Sander Postma",
+  "license": "ISC",
+  "private": true,
+  "dependencies": {
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/typescript": "^2.0.0"
+  }
+}

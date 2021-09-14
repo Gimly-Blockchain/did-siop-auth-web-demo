@@ -4,9 +4,9 @@
   "main": "index.js",
   "license": "ISC",
   "scripts": {
-    "start-server": "cd server && yarn run start",
-    "start-client": "cd client && yarn run start",
-    "build": "cd client && yarn run build",
+    "start-server": "cd onto-demo-server && yarn run start",
+    "start-client": "cd onto-demo-client && yarn run start",
+    "build": "cd onto-demo-client && yarn run build",
     "start": "concurrently \"yarn start-server\" \"yarn start-client\""
   },
   "dependencies": {
