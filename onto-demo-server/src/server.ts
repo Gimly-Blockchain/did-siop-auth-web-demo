@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser"
 import {AuthRequestMapping, QRVariables} from "onto-demo-shared-types/dist"
 import ExpiryMap from "expiry-map"
 import shortUUID from "short-uuid"
-import {AuthRequestResponse} from "../../onto-demo-shared-types/dist";
+import {AuthRequestResponse} from "onto-demo-shared-types/dist";
 //import {RPAuthService} from "@gimly/did-auth-siop/dist/RPAuthService"
 
 
