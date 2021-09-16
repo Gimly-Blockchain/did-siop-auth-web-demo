@@ -1,10 +1,13 @@
-import logo from "./logo.svg"
 import "./App.css"
 import React, {Component} from "react"
+import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
 import Button from "react-bootstrap/Button"
 import AuthenticationModal from "./components/AuthenticationModal"
 import {AuthRequestResponse} from "../../onto-demo-shared-types/dist"
 import jsonpack from "jsonpack"
+import NNav from "./components/Nav";
+import Landing from "./pages/Landing";
+import {Col, Container, Row} from "react-bootstrap";
 
 
 export type AppState = {
@@ -26,17 +29,21 @@ class App extends Component<AppState> {
   render() {
     this.saveState();
     return (
-        <div className="App">
-
+        <div>
           <header className="App-header">
-            <img src={logo} className="App-logo" alt="logo"/>
-            <p>
-              ONTO QR code authentication demo using SIOP
-            </p>
-            {this.stateDependentBlock()}
+            {this.signInOutButtons()}
           </header>
-          <AuthenticationModal show={this.state.showAuthenticationModal as boolean} onCloseClicked={this.hideLoginDialog}
-                               onSignInComplete={this.completeSignIn}/>
+          <Router>
+            <div style={{display: "flex"}}>
+              <NNav authRequestResponse={this.state.authRequestResponse}/>
+              <Switch>
+                <Route component={Landing} path="/"/>
+              </Switch>
+              <AuthenticationModal show={this.state.showAuthenticationModal as boolean} onCloseClicked={this.hideLoginDialog}
+                                   onSignInComplete={this.completeSignIn}/>
+            </div>
+
+          </Router>
         </div>
     )
   }
@@ -75,12 +82,33 @@ class App extends Component<AppState> {
     localStorage.setItem(this._stateStorageKey, jsonpack.pack(this.state))
   };
 
-  private stateDependentBlock = () => {
+  private signInOutButtons = () => {
     const authRequestResponse = this.state.authRequestResponse
     if (authRequestResponse) {
-      return <Button variant="primary" size="lg" onClick={this.signOut}>Sign out</Button>
+      return (<Container fluid>
+            <Row className="align-items-center">
+              <Col className="col-10">
+                <h5>Hello {authRequestResponse.userName}</h5>
+              </Col>
+              <Col className="col-2">
+                <Button variant="primary" size="lg" onClick={this.signOut}>Sign out</Button>
+              </Col>
+            </Row>
+          </Container>
+      )
     } else {
-      return <Button variant="primary" size="lg" onClick={this.showLoginDialog}>Sign in</Button>
+      return (<Container fluid>
+            <Row>
+              <Col className="col-10">
+                <h5/>
+              </Col>
+              <Col className="col-2">
+                <Button variant="primary" size="lg" onClick={this.showLoginDialog}>Sign in</Button>
+              </Col>
+            </Row>
+          </Container>
+      )
+      return
     }
   };
 }
