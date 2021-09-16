@@ -1,18 +1,19 @@
 // noinspection JSUnusedGlobalSymbols
 export class QRVariables {
-  redirectUrl?: string;
-  requestorDID?: string;
+  redirectUrl?: string
+  requestorDID?: string
 }
 
 export class AuthRequestMapping {
-  redirectUrl?: string;
-  nonce?: string;
-  requestorDID?: string;
-  sessionId?:string;
+  redirectUrl?: string
+  nonce?: string
+  requestorDID?: string
+  sessionId?:string
+  pollCount?: number
 }
 
 
-export declare class AuthRequestResponse {
+export class AuthRequestResponse {
   authRequestMapping: AuthRequestMapping
   userDID: string
   userName: string

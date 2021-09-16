@@ -17,7 +17,7 @@ export default class AuthenticationModal extends Component<AuthenticationModalPr
   }
 
   render() {
-    return <Modal show={this.props.show} dialogClassName="modal-qr">
+    return <Modal show={this.props.show} animation={false}>
       <Modal.Header style={{
         display: "flex",
         justifyContent: "center",

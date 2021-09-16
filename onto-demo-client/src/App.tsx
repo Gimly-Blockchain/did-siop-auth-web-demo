@@ -2,9 +2,9 @@ import logo from "./logo.svg"
 import "./App.css"
 import React, {Component} from "react"
 import Button from "react-bootstrap/Button"
-import axios from "axios"
 import AuthenticationModal from "./components/AuthenticationModal"
 import {AuthRequestResponse} from "../../onto-demo-shared-types/dist"
+import jsonpack from "jsonpack"
 
 
 export type AppState = {
@@ -15,17 +15,16 @@ export type AppState = {
 
 class App extends Component<AppState> {
 
-  state: AppState = {
-    showAuthenticationModal: false
-  }
+  state: AppState = {}
+  private readonly _stateStorageKey = "state-onto-app";
 
-  componentDidMount() {
-    this.callBackendAPI()
-    .then(authenticated => this.setState({data: authenticated}))
-    .catch(err => console.log(err))
+  constructor(props: AppState, context: any) {
+    super(props, context);
+    this.initState();
   }
 
   render() {
+    this.saveState();
     return (
         <div className="App">
 
@@ -42,18 +41,6 @@ class App extends Component<AppState> {
     )
   }
 
-
-  // fetching the GET route from the Express server which matches the GET route from server.js
-  callBackendAPI = async (): Promise<string> => {
-    const response = await axios.get("/authenticate")
-    const body = await response.data
-
-    if (response.status !== 200) {
-      throw Error(body.message)
-    }
-    return body.authenticated ? "Authenticated" : "Not authenticated"
-  }
-
   private showLoginDialog = () => {
     this.setState({showAuthenticationModal: true})
   }
@@ -62,22 +49,40 @@ class App extends Component<AppState> {
     this.setState({showAuthenticationModal: false})
   }
 
-  private completeSignIn = () => {
-    this.setState({showAuthenticationModal: false})
+  private completeSignIn = (authRequestResponse: AuthRequestResponse) => {
+    this.setState({showAuthenticationModal: false, authRequestResponse: authRequestResponse})
   }
 
-  private signOut() {
+  private signOut = () => {
     this.setState({authRequestResponse: undefined})
+  };
+
+  private initState() {
+    let storedState = localStorage.getItem(this._stateStorageKey)
+    if (storedState != null) {
+      this.loadState(storedState);
+    } else {
+      this.state.showAuthenticationModal = false
+    }
   }
 
-  private stateDependentBlock() {
+  private loadState = (storedState: string) => {
+    this.state = jsonpack.unpack(storedState) as AppState
+  };
+
+
+  private saveState = () => {
+    localStorage.setItem(this._stateStorageKey, jsonpack.pack(this.state))
+  };
+
+  private stateDependentBlock = () => {
     const authRequestResponse = this.state.authRequestResponse
     if (authRequestResponse) {
       return <Button variant="primary" size="lg" onClick={this.signOut}>Sign out</Button>
     } else {
       return <Button variant="primary" size="lg" onClick={this.showLoginDialog}>Sign in</Button>
     }
-  }
+  };
 }
 
 export default App

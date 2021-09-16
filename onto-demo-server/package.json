@@ -13,10 +13,10 @@
     "@gimly/did-auth-siop": "file:C:/-DEV/Sandbox/did-auth-siop/gimly-did-auth-siop-v0.0.1.tgz",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
-    "dotenv": "^10.0.0",
     "dotenv-flow": "^3.2.0",
     "expiry-map": "^1.1.0",
     "express": "^4.17.1",
+    "short-uuid": "^4.2.0",
     "typescript": "^4.4.3",
     "yarn": "^1.22.11"
   },
