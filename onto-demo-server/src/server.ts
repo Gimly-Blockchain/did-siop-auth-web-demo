@@ -21,16 +21,6 @@ app.use(cookieParser(secret))
 app.listen(port, () => console.log(`Listening on port ${port}`))
 
 
-app.get("/authenticate", (request, response) => {
-  const options: CookieOptions = {
-    signed: true,
-    httpOnly: true
-  }
-//  const rpAuthService: RPAuthService = new RPAuthService(null)
-  const sessionId: string = shortUUID.generate()
-  response.cookie("sessionId", sessionId, options).send({authenticated: true})
-})
-
 app.get("/get-qr-variables", (request, response) => {
   const qrVariables = new QRVariables()
   qrVariables.requestorDID = "did:1234"
@@ -40,7 +30,16 @@ app.get("/get-qr-variables", (request, response) => {
 
 app.post("/register-auth-request", (request, response) => {
   const authRequestMapping: AuthRequestMapping = request.body
-  authRequestMapping.sessionId = request.signedCookies.sessionId
+  let sessionId: string = request.signedCookies.sessionId;
+  if (!sessionId) {
+    sessionId = shortUUID.generate()
+    const options: CookieOptions = {
+      signed: true,
+      httpOnly: true
+    }
+    response.cookie("sessionId", sessionId, options).send({authenticated: true})
+  }
+  authRequestMapping.sessionId = sessionId
 
   authRequestMap.set(authRequestMapping.nonce, authRequestMapping)
   console.log("Received AuthRequestMapping", authRequestMapping)
@@ -52,13 +51,13 @@ app.post("/register-auth-request", (request, response) => {
 app.post("/poll-auth-response", (request, response) => {
   const nonce: string = request.body.nonce as string
   const authRequestMapping: AuthRequestMapping = authRequestMap.get(nonce)
-  if(authRequestMapping === null) {
+  if (authRequestMapping === null) {
     sendErrorResponse(response, 500, "No authentication request mapping could be found for the given nonce.")
     return
   }
   const sessionId: string = request.signedCookies.sessionId
-  if (authRequestMapping === null || authRequestMapping.sessionId != sessionId) {
-    sendErrorResponse(response, 403, "Browser session violation!" )
+  if (authRequestMapping === null || !authRequestMapping.sessionId || authRequestMapping.sessionId !== sessionId) {
+    sendErrorResponse(response, 403, "Browser session violation!")
     return
   }
 
@@ -73,7 +72,7 @@ app.post("/poll-auth-response", (request, response) => {
 
 
 function mockResponse(authRequestMapping: AuthRequestMapping, response: Response) {
-  if(authRequestMapping.pollCount == undefined) authRequestMapping.pollCount = 0
+  if (authRequestMapping.pollCount == undefined) authRequestMapping.pollCount = 0
 
   if (authRequestMapping.pollCount > 2) {
     console.log("Poll mockup sending AuthResponse")
