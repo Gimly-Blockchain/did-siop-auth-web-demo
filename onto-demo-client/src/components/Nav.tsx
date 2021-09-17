@@ -1,17 +1,9 @@
-import React, {Component} from "react";
+import React from "react";
 import {Link} from 'react-router-dom';
-import {AuthResponse} from "../../../onto-demo-shared-types/dist";
+import ProtectedResource from "../pages/ProtectedResource";
 
 
-export type NavProps = {
-  AuthResponse?: AuthResponse
-}
-
-export default class Nav extends Component<NavProps> {
-
-  constructor(props: NavProps) {
-    super(props)
-  }
+export default class Nav extends ProtectedResource {
 
   render() {
     return (
@@ -34,7 +26,7 @@ export default class Nav extends Component<NavProps> {
   }
 
   private protectedResources() {
-    if (this.props.AuthResponse) {
+    if (this.isAuthenticated()) {
       return <>
         <li>
           <Link to="/secret">A secret page</Link>

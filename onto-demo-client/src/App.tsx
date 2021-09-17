@@ -30,6 +30,7 @@ class App extends Component<AppState> {
 
   render() {
     this.saveState();
+    const authResponse = this.state.AuthResponse as AuthResponse;
     return (
         <div>
           <header className="App-header">
@@ -37,13 +38,13 @@ class App extends Component<AppState> {
           </header>
           <Router>
             <div style={{display: "flex"}}>
-              <Nav AuthResponse={this.state.AuthResponse}/>
+              <Nav AuthResponse={authResponse}/>
               <Switch>
                 <Route path="/secret">
-                  <Secret AuthResponse={this.state.AuthResponse as AuthResponse}/>
+                  <Secret AuthResponse={authResponse}/>
                 </Route>
                 <Route path="/classified">
-                  <Classified AuthResponse={this.state.AuthResponse as AuthResponse}/>
+                  <Classified AuthResponse={authResponse}/>
                 </Route>
                 <Route path="/"><Landing/></Route>
               </Switch>
