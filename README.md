@@ -1,5 +1,13 @@
 # Under Construction :construction:
 
-yarn global add concurrently
 
-yarn global add ts-node
+
+### Getting started
+
+#### From the root directory 
+- yarn global add concurrently
+- yarn global add ts-node
+- yarn install-all
+- yarn start
+
+
