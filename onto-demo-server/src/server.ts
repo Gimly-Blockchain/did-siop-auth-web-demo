@@ -23,8 +23,8 @@ app.listen(port, () => console.log(`Listening on port ${port}`))
 
 app.get("/get-qr-variables", (request, response) => {
   const qrVariables = new QRVariables()
-  qrVariables.requestorDID = "did:1234"
-  qrVariables.redirectUrl = "https://sphereon.com"
+  qrVariables.requestorDID = process.env.REQUESTOR_DID
+  qrVariables.redirectUrl = process.env.REDIRECT_URL
   response.send(qrVariables)
 })
 
