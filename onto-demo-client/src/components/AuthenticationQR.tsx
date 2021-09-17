@@ -2,10 +2,11 @@ import React, {Component} from "react"
 import GimlyIDQRCode, {QRContent, QRMode, QRType} from "gimlyid-qr-code"
 import axios from "axios"
 import Loader from "react-loader-spinner"
-import {AuthRequestMapping, AuthRequestResponse, QRVariables} from "onto-demo-shared-types/dist"
+import _ from "lodash"
+import {AuthRequestMapping, AuthResponse, QRVariables} from "onto-demo-shared-types"
 
 export type AuthenticationQRProps = {
-  onSignInComplete: (authRequestResponse: AuthRequestResponse) => void
+  onSignInComplete: (AuthResponse: AuthResponse) => void
 }
 
 export interface AuthenticationQRState {
@@ -48,7 +49,7 @@ export default class AuthenticationQR extends Component<AuthenticationQRProps> {
     return <GimlyIDQRCode
         type={QRType.AUTHENTICATION}
         mode={QRMode.DID_AUTH_SIOP_V2}
-        did={qrVariables?.requestorDID}
+        did={qrVariables?.requestorDID as string}
         redirectUrl={qrVariables?.redirectUrl}
         onGenerate={(qrContent: QRContent) => this.registerAuthenticationRequest(qrContent)}
     />
@@ -103,7 +104,9 @@ export default class AuthenticationQR extends Component<AuthenticationQRProps> {
       await axios.post("/cancel-auth-request", {nonce: authRequestMapping.nonce})
       this.timedOutRequestMappings.delete(authRequestMapping)
     } else if (pollingResponse.status === 200) {
-      this.props.onSignInComplete(pollingResponse.data as AuthRequestResponse)
+      const authResponse:AuthResponse = new AuthResponse()
+      _.assign(authResponse , _.pick(pollingResponse.data, ["authRequestMapping", "userDID", "userName"])); // FIXME?
+      this.props.onSignInComplete(authResponse)
     } else {
       throw Error(pollingResponse.data.message)
     }

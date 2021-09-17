@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser"
 import {AuthRequestMapping, QRVariables} from "onto-demo-shared-types/dist"
 import ExpiryMap from "expiry-map"
 import shortUUID from "short-uuid"
-import {AuthRequestResponse} from "onto-demo-shared-types/dist";
+import {AuthResponse} from "onto-demo-shared-types/dist";
 //import {RPAuthService} from "@gimly/did-auth-siop/dist/RPAuthService"
 
 
@@ -76,8 +76,8 @@ function mockResponse(authRequestMapping: AuthRequestMapping, response: Response
   if(authRequestMapping.pollCount == undefined) authRequestMapping.pollCount = 0
 
   if (authRequestMapping.pollCount > 2) {
-    console.log("Poll mockup sending AuthRequestResponse")
-    const authResponse: AuthRequestResponse = new AuthRequestResponse()
+    console.log("Poll mockup sending AuthResponse")
+    const authResponse: AuthResponse = new AuthResponse()
     authResponse.authRequestMapping = authRequestMapping
     authResponse.userDID = "did:test-user"
     authResponse.userName = "Mr. Test"

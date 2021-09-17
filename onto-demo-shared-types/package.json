@@ -1,8 +1,8 @@
 {
   "name": "onto-demo-shared-types",
-  "version": "1.0.5",
+  "version": "1.0.9",
   "description": "Shared types between modules",
-  "main": "index.js",
+  "main": "dist/index.js",
   "author": "Sander Postma",
   "license": "ISC",
   "private": true,

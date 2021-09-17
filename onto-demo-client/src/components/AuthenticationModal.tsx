@@ -2,12 +2,12 @@ import {Col, Container, Modal, Row} from "react-bootstrap"
 import Button from "react-bootstrap/Button"
 import AuthenticationQR from "./AuthenticationQR"
 import {Component} from "react"
-import {AuthRequestResponse} from "../../../onto-demo-shared-types/dist"
+import {AuthResponse} from "onto-demo-shared-types"
 
 export type AuthenticationModalProps = {
   show?: boolean
   onCloseClicked?: () => void
-  onSignInComplete: (authRequestResponse: AuthRequestResponse) => void
+  onSignInComplete: (AuthResponse: AuthResponse) => void
 }
 
 export default class AuthenticationModal extends Component<AuthenticationModalProps> {
@@ -35,8 +35,8 @@ export default class AuthenticationModal extends Component<AuthenticationModalPr
           </Row>
           <Row>
             <Col className="d-flex justify-content-center" style={{paddingTop: "10px"}}>
-              <AuthenticationQR onSignInComplete={(authRequestResponse) =>
-                  this.props.onSignInComplete(authRequestResponse)}/>
+              <AuthenticationQR onSignInComplete={(AuthResponse) =>
+                  this.props.onSignInComplete(AuthResponse)}/>
             </Col>
           </Row>
 

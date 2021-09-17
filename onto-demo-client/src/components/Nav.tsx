@@ -1,10 +1,10 @@
 import React, {Component} from "react";
 import {Link} from 'react-router-dom';
-import {AuthRequestResponse} from "../../../onto-demo-shared-types/dist";
+import {AuthResponse} from "../../../onto-demo-shared-types/dist";
 
 
 export type NavProps = {
-  authRequestResponse?: AuthRequestResponse
+  AuthResponse?: AuthResponse
 }
 
 export default class Nav extends Component<NavProps> {
@@ -34,13 +34,13 @@ export default class Nav extends Component<NavProps> {
   }
 
   private protectedResources() {
-    if (this.props.authRequestResponse) {
+    if (this.props.AuthResponse) {
       return <>
         <li>
           <Link to="/secret">A secret page</Link>
         </li>
         <li>
-          <Link to="/top-secret">A top-secret page</Link>
+          <Link to="/classified">A classified page</Link>
         </li>
       </>;
     } else {

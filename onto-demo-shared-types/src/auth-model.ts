@@ -13,7 +13,7 @@ export class AuthRequestMapping {
 }
 
 
-export class AuthRequestResponse {
+export class AuthResponse {
   authRequestMapping: AuthRequestMapping
   userDID: string
   userName: string
