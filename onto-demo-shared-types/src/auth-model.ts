@@ -4,17 +4,18 @@ export class QRVariables {
   requestorDID?: string
 }
 
-export class AuthRequestMapping {
+export class StateMapping {
   redirectUrl?: string
-  nonce?: string
+  stateId?: string
   requestorDID?: string
   sessionId?:string
   pollCount?: number
+  authRequestCreated: boolean = false
 }
 
 
 export class AuthResponse {
-  authRequestMapping: AuthRequestMapping
+  stateMapping: StateMapping
   userDID: string
   userName: string
 }

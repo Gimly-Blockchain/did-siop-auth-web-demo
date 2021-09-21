@@ -8,10 +8,9 @@
     "@testing-library/user-event": "^12.1.10",
     "axios": "^0.21.4",
     "bootstrap": "^5.1.1",
-    "onto-demo-shared-types": "file:../onto-demo-shared-types",
-    "gimlyid-qr-code": "file:../lib/gimlyid-qr-code-v0.1.0.tgz",
+    "gimlyid-qr-code": "..\\lib\\gimlyid-qr-code-v0.1.2.tgz",
     "jsonpack": "^1.1.5",
-    "lodash": "^4.17.21",
+    "onto-demo-shared-types": "file:..\\onto-demo-shared-types\\",
     "react": "^17.0.2",
     "react-bootstrap": "^1.6.3",
     "react-dom": "^17.0.2",
@@ -48,8 +47,9 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:5000",
+  "proxy": "http://localhost:5001",
   "devDependencies": {
+    "@types/js-cookie": "^2.2.7",
     "@types/jsonpack": "^1.1.1",
     "@types/lodash": "^4.14.173",
     "@types/node": "^16.9.1",

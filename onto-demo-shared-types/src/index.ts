@@ -1,2 +1,2 @@
-export {QRVariables, AuthRequestMapping, AuthResponse} from './auth-model';
+export {QRVariables, StateMapping, AuthResponse} from './auth-model';
 

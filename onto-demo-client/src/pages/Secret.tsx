@@ -8,9 +8,7 @@ export default class Landing extends ProtectedResource {
       return (
           <div className="App">
             <img src="secret.gif" alt="logo"/>
-            <p>
-              <h5>The secret page</h5>
-            </p>
+            <h5>The secret page</h5>
           </div>
       )
     } else {

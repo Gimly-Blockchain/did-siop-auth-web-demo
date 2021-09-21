@@ -73,7 +73,7 @@ class App extends Component<AppState> {
   };
 
   private initState() {
-    let storedState = localStorage.getItem(this._stateStorageKey)
+    let storedState = sessionStorage.getItem(this._stateStorageKey)
     if (storedState != null) {
       this.loadState(storedState);
     } else {
@@ -87,7 +87,7 @@ class App extends Component<AppState> {
 
 
   private saveState = () => {
-    localStorage.setItem(this._stateStorageKey, jsonpack.pack(this.state))
+    sessionStorage.setItem(this._stateStorageKey, jsonpack.pack(this.state))
   };
 
   private signInOutButtons = () => {

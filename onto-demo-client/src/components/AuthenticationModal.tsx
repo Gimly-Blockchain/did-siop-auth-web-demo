@@ -1,5 +1,4 @@
-import {Col, Container, Modal, Row} from "react-bootstrap"
-import Button from "react-bootstrap/Button"
+import {Button, Col, Container, Modal, Row} from "react-bootstrap"
 import AuthenticationQR from "./AuthenticationQR"
 import {Component} from "react"
 import {AuthResponse} from "onto-demo-shared-types"
@@ -10,10 +9,18 @@ export type AuthenticationModalProps = {
   onSignInComplete: (AuthResponse: AuthResponse) => void
 }
 
-export default class AuthenticationModal extends Component<AuthenticationModalProps> {
+interface AuthenticationModalState {
+  authRequestCreated: boolean
+}
+
+export default class AuthenticationModal extends Component<AuthenticationModalProps, AuthenticationModalState> {
+
+  private readonly scanText = "Please scan this QR code now in your authenticator app.";
+  private readonly authText = "Please approve the authentication request in your app.";
 
   constructor(props: AuthenticationModalProps) {
     super(props)
+    this.state = {authRequestCreated: false}
   }
 
   render() {
@@ -30,13 +37,17 @@ export default class AuthenticationModal extends Component<AuthenticationModalPr
         <Container>
           <Row>
             <Col className="d-flex justify-content-center">
-              <h6>Please scan this QR code now in your authenticator app.</h6>
+              <h6>{this.state.authRequestCreated ? this.authText : this.scanText}</h6>
             </Col>
           </Row>
           <Row>
             <Col className="d-flex justify-content-center" style={{paddingTop: "10px"}}>
-              <AuthenticationQR onSignInComplete={(AuthResponse) =>
-                  this.props.onSignInComplete(AuthResponse)}/>
+              <AuthenticationQR
+                  onAuthRequestCreated={() => {
+                    this.setState({authRequestCreated: true})
+                  }}
+                  onSignInComplete={(AuthResponse) =>
+                      this.props.onSignInComplete(AuthResponse)}/>
             </Col>
           </Row>
 

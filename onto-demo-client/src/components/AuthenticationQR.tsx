@@ -2,10 +2,10 @@ import React, {Component} from "react"
 import GimlyIDQRCode, {QRContent, QRMode, QRType} from "gimlyid-qr-code"
 import axios from "axios"
 import Loader from "react-loader-spinner"
-import _ from "lodash"
-import {AuthRequestMapping, AuthResponse, QRVariables} from "onto-demo-shared-types"
+import {AuthResponse, QRVariables, StateMapping} from "onto-demo-shared-types"
 
 export type AuthenticationQRProps = {
+  onAuthRequestCreated: () => void
   onSignInComplete: (AuthResponse: AuthResponse) => void
 }
 
@@ -21,18 +21,21 @@ export default class AuthenticationQR extends Component<AuthenticationQRProps> {
 
   state: AuthenticationQRState = {}
 
-  private authRequestSent: boolean = false
+  private registerStateSent: boolean = false
   private refreshTimerHandle?: NodeJS.Timeout;
   private qrExpiryMs: number = 0
-  private currentRequestMapping?: AuthRequestMapping
-  private timedOutRequestMappings: Set<AuthRequestMapping> = new Set<AuthRequestMapping>()
+  private currentStateMapping?: StateMapping
+  private timedOutRequestMappings: Set<StateMapping> = new Set<StateMapping>()
 
 
   componentDidMount() {
     this.qrExpiryMs = parseInt(process.env.REACT_APP_QR_CODE_EXPIRES_AFTER_SEC) * 1000
-    this.getQRVariables().then(qrVariables =>
-        this.setState({qrVariables: qrVariables, qrCode: this.generateGimlyIDQRCode(qrVariables)}))
-    this.refreshTimerHandle = setTimeout(() => this.refreshQR(), this.qrExpiryMs)
+    if (!this.state.qrCode) {
+      this.getQRVariables().then(qrVariables => {
+        return this.setState({qrVariables: qrVariables, qrCode: this.generateGimlyIDQRCode(qrVariables)});
+      })
+      this.refreshTimerHandle = setTimeout(() => this.refreshQR(), this.qrExpiryMs)
+    }
   }
 
   componentWillUnmount() {
@@ -51,12 +54,12 @@ export default class AuthenticationQR extends Component<AuthenticationQRProps> {
         mode={QRMode.DID_AUTH_SIOP_V2}
         did={qrVariables?.requestorDID as string}
         redirectUrl={qrVariables?.redirectUrl}
-        onGenerate={(qrContent: QRContent) => this.registerAuthenticationRequest(qrContent)}
+        onGenerate={(qrContent: QRContent) => this.registerState(qrContent)}
     />
   }
 
   private getQRVariables = async () => {
-    const response = await axios.get("/get-qr-variables")
+    const response = await axios.get("/backend/get-qr-variables")
     const body = await response.data
 
     if (response.status !== 200) {
@@ -67,46 +70,48 @@ export default class AuthenticationQR extends Component<AuthenticationQRProps> {
 
   private refreshQR = () => {
     console.log("Timeout expired, refreshing QR code...")
-    if (this.currentRequestMapping) {
-      this.timedOutRequestMappings.add(this.currentRequestMapping)
+    if (this.currentStateMapping) {
+      this.timedOutRequestMappings.add(this.currentStateMapping)
     }
     this.setState({qrCode: this.generateGimlyIDQRCode(this.state.qrVariables as QRVariables)})
     this.refreshTimerHandle = setTimeout(() => this.refreshQR(), this.qrExpiryMs)
   }
 
-  private registerAuthenticationRequest = (qrContent: QRContent) => {
-    if (this.authRequestSent) return
-    this.authRequestSent = true // FIXME gives a warning
+  private registerState = (qrContent: QRContent) => {
+    if (this.registerStateSent) return
+    this.registerStateSent = true // FIXME gives a warning
 
-    const authRequestMapping: AuthRequestMapping = new AuthRequestMapping()
-    authRequestMapping.requestorDID = qrContent.did
-    authRequestMapping.redirectUrl = qrContent.redirectUrl
-    authRequestMapping.nonce = qrContent.nonce
-    axios.post("/register-auth-request", authRequestMapping)
-    .then(response => {
-      console.log("register-auth-request response status", response.status)
-      if (response.status !== 200) {
-        throw Error(response.data.message)
-      }
-      this.currentRequestMapping = authRequestMapping
-      this.pollForResponse(authRequestMapping)
-    })
-    .catch(error => console.error("register-auth-request failed", error))
+    const stateMapping: StateMapping = new StateMapping()
+    stateMapping.requestorDID = qrContent.did
+    stateMapping.redirectUrl = qrContent.redirectUrl
+    stateMapping.stateId = qrContent.state
+    axios.post("/backend/register-state", stateMapping)
+        .then(response => {
+          console.log("register-state response status", response.status)
+          if (response.status !== 200) {
+            throw Error(response.data.message)
+          }
+          this.currentStateMapping = stateMapping
+          this.pollForResponse(stateMapping)
+        })
+        .catch(error => console.error("register-state failed", error))
   }
 
-  private pollForResponse = async (authRequestMapping: AuthRequestMapping) => {
-    let pollingResponse = await axios.post("/poll-auth-response", {nonce: authRequestMapping.nonce})
-    while (pollingResponse.status === 202 && !this.timedOutRequestMappings.has(authRequestMapping)) {
-      pollingResponse = await axios.post("/poll-auth-response", {nonce: authRequestMapping.nonce})
+  private pollForResponse = async (stateMapping: StateMapping) => {
+    let pollingResponse = await axios.post("/backend/poll-auth-response", {stateId: stateMapping.stateId})
+    while (pollingResponse.status === 202 && !this.timedOutRequestMappings.has(stateMapping)) {
+      if (this.state.qrCode && pollingResponse.data && pollingResponse.data.authRequestCreated) {
+        this.setState({qrCode: undefined})
+        this.props.onAuthRequestCreated()
+      }
+      pollingResponse = await axios.post("/backend/poll-auth-response", {stateId: stateMapping.stateId})
     }
-    if (this.timedOutRequestMappings.has(authRequestMapping)) {
+    if (this.timedOutRequestMappings.has(stateMapping)) {
       console.log("Cancelling timed out auth request.")
-      await axios.post("/cancel-auth-request", {nonce: authRequestMapping.nonce})
-      this.timedOutRequestMappings.delete(authRequestMapping)
+      await axios.post("/backend/cancel-auth-request", {stateId: stateMapping.stateId})
+      this.timedOutRequestMappings.delete(stateMapping)
     } else if (pollingResponse.status === 200) {
-      const authResponse:AuthResponse = new AuthResponse()
-      _.assign(authResponse , _.pick(pollingResponse.data, ["authRequestMapping", "userDID", "userName"])); // FIXME?
-      this.props.onSignInComplete(authResponse)
+      this.props.onSignInComplete(pollingResponse.data as AuthResponse)
     } else {
       throw Error(pollingResponse.data.message)
     }
