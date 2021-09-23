@@ -11,11 +11,12 @@ export class StateMapping {
   sessionId?:string
   pollCount?: number
   authRequestCreated: boolean = false
+  authResponse? :AuthResponse
 }
 
 
 export class AuthResponse {
-  stateMapping: StateMapping
   userDID: string
   userName: string
+  token?: string
 }

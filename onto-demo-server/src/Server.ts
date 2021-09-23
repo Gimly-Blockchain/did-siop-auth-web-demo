@@ -7,19 +7,19 @@ import ExpiryMap from "expiry-map"
 import shortUUID from "short-uuid"
 import {AuthResponse} from "onto-demo-shared-types";
 import * as core from "express-serve-static-core";
-import {PassBy} from "@sphereon/did-auth-siop/dist/main/types/SIOP.types";
+import {PassBy, VerifiedAuthenticationResponseWithJWT} from "@sphereon/did-auth-siop/dist/main/types/SIOP.types";
 import {RP} from "@sphereon/did-auth-siop/dist/main/RP";
 
 
-const EXAMPLE_REFERENCE_URL = "https://rp.acme.com/siop/jwts"; // FIXME to env
-const HEX_KEY = "f857544a9d1097e242ff0b287a7e6e90f19cf973efe2317f2a4678739664420f";
-const DID = "did:ethr:0x0106a2e985b1E1De9B5ddb4aF6dC9e928F4e99D0";
-const KID = "did:ethr:0x0106a2e985b1E1De9B5ddb4aF6dC9e928F4e99D0#keys-1";
+const HEX_KEY = "850e54b92c6291a1ff7b8c3ef30e032571ed77c9e5c78b1cd6ee5fec4fea984f";
+const DID = "did:ethr:0xe1dB95357A4258b33A994Fa8cBA5FdC6bd70011D";
+const KID = "did:ethr:0xe1dB95357A4258b33A994Fa8cBA5FdC6bd70011D#controller";
 
 class Server {
 
   public express: core.Express;
   private stateMap: ExpiryMap<string, StateMapping>;
+  private rp: RP;
 
   constructor() {
     dotenv.config()
@@ -33,6 +33,7 @@ class Server {
     this.express.use(cookieParser(secret))
     this.express.listen(port as number, "0.0.0.0", () => console.log(`Listening on port ${port}`))
 
+    this.buildRP();
     this.registerWebAppEndpoints()
     this.registerSIOPEndpoint()
   }
@@ -84,9 +85,13 @@ class Server {
       if ("true" == process.env.MOCK_AUTH_RESPONSE && "development" == process.env.NODE_ENV) {
         this.mockResponse(stateMapping, response)
       } else {
-        // TODO RPAuthService integration
-        response.statusCode = 202
-        response.send({authRequestCreated: stateMapping.authRequestCreated})
+        if (stateMapping.authResponse == null) {
+          response.statusCode = 202
+          response.send({authRequestCreated: stateMapping.authRequestCreated})
+        } else {
+          response.statusCode = 200
+          response.send(stateMapping.authResponse)
+        }
       }
     })
 
@@ -102,8 +107,10 @@ class Server {
       const stateId = request.query["stateId"] as string
       const stateMapping: StateMapping = this.stateMap.get(stateId);
       if (stateMapping) {
-        const rp = this.buildRP();
-        rp.createAuthenticationRequest({nonce: shortUUID.generate(), state: stateId})
+        let nonce = shortUUID.generate();
+        console.log(`Nonce: ${nonce}`)
+
+        this.rp.createAuthenticationRequest({nonce, state: stateId})
             .then(requestURI => {
               response.statusCode = 200
               response.send(requestURI.encodedUri)
@@ -118,33 +125,42 @@ class Server {
     })
 
     this.express.post("/ext/siop-sessions", (request, response) => {
-          // TODO
-
+          const authResponse = request.body;
+          const stateMapping: StateMapping = this.stateMap.get(authResponse.payload.state)
+          if (stateMapping === null) {
+            Server.sendErrorResponse(response, 500, "No request mapping could be found for the given stateId.")
+            return
+          }
+          this.rp.verifyAuthenticationResponseJwt(authResponse.jwt, {audience: authResponse.payload.aud})
+              .then((verifiedResponse: VerifiedAuthenticationResponseWithJWT) => {
+                console.log("verifiedResponse: ", verifiedResponse)
+                stateMapping.authResponse = {
+                  token: verifiedResponse.jwt,
+                  userDID: verifiedResponse.payload.did,
+                  userName: "Bob OP (hardcoded)"
+                }
+                response.statusCode = 200
+                response.send()
+              })
+              .catch(reason => {
+                console.error("verifyAuthenticationResponseJwt failed:", reason)
+              })
         }
     )
   }
 
   private buildRP() {
-    const rp = RP.builder()
-        .redirect(process.env.REDIRECT_URL_BASE + "/siop-sessions")
-        .requestRef(PassBy.REFERENCE, EXAMPLE_REFERENCE_URL)
+    this.rp = RP.builder()
+        .redirect(process.env.REDIRECT_URL_BASE + "/siop-sessions",)
+        .requestBy(PassBy.VALUE)
         .internalSignature(HEX_KEY, DID, KID)
-        .registrationRef(PassBy.VALUE)
-        .addDidMethod('ethr')
-        .build()
-    /*
-            const rp = RP.builder()
-            .addDidMethod("eosio")
-            .addResolver('eosio', new Resolver(getUniResolver('eosio')))
-            .redirect(process.env.REDIRECT_URL + "/siop-sessions")
-            .requestRef(PassBy.VALUE)
-            .response(ResponseMode.POST)
-            .registrationRef(PassBy.REFERENCE, 'https://registration.here')
-            .internalSignature('e4924411769ab9435ee540d2723555d962b07c974af4f3e90f713c9eec54e2ed70e45143aedb',
-                'did:eosio:eos:testnet:jungle:spostma33333', 'did:eosio:eos:testnet:jungle:spostma33333#owner-0')
-            .build()
-    */
-    return rp;
+        .addDidMethod("ethr")
+        .registrationBy(PassBy.VALUE)
+        .build();
+  }
+
+  private timeout(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   private mockResponse(stateMapping: StateMapping, response: Response) {
@@ -153,24 +169,19 @@ class Server {
     if (stateMapping.pollCount > 2) {
       console.log("Poll mockup sending AuthResponse")
       const authResponse: AuthResponse = new AuthResponse()
-      authResponse.stateMapping = stateMapping
       authResponse.userDID = "did:test-user"
       authResponse.userName = "Mr. Test"
       response.statusCode = 200
       response.send(authResponse)
     } else {
       console.log("Poll mockup delaying poll response")
-      this.timeout(3000).then(() => {
+      this.timeout(2000).then(() => {
         stateMapping.pollCount++
         console.log("Poll mockup sending 202 response, pollCount=", stateMapping.pollCount)
         response.statusCode = 202
         response.send()
       })
     }
-  }
-
-  private timeout(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
 

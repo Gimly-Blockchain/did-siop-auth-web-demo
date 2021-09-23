@@ -2,7 +2,7 @@ import React, {Component} from "react"
 import GimlyIDQRCode, {QRContent, QRMode, QRType} from "gimlyid-qr-code"
 import axios from "axios"
 import Loader from "react-loader-spinner"
-import {AuthResponse, QRVariables, StateMapping} from "onto-demo-shared-types"
+import {AuthResponse, QRVariables, StateMapping} from "onto-demo-shared-types/dist"
 
 export type AuthenticationQRProps = {
   onAuthRequestCreated: () => void
@@ -15,9 +15,6 @@ export interface AuthenticationQRState {
 }
 
 export default class AuthenticationQR extends Component<AuthenticationQRProps> {
-  constructor(props: AuthenticationQRProps) {
-    super(props)
-  }
 
   state: AuthenticationQRState = {}
 

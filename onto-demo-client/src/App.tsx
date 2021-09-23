@@ -3,7 +3,7 @@ import React, {Component} from "react"
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
 import Button from "react-bootstrap/Button"
 import AuthenticationModal from "./components/AuthenticationModal"
-import {AuthResponse} from "onto-demo-shared-types"
+import {AuthResponse} from "onto-demo-shared-types/dist"
 import jsonpack from "jsonpack"
 import Nav from "./components/Nav";
 import Landing from "./pages/Landing";
@@ -14,7 +14,7 @@ import {Col, Container, Row} from "react-bootstrap";
 
 export type AppState = {
   showAuthenticationModal?: boolean
-  AuthResponse?: AuthResponse
+  authResponse?: AuthResponse
 }
 
 
@@ -30,7 +30,7 @@ class App extends Component<AppState> {
 
   render() {
     this.saveState();
-    const authResponse = this.state.AuthResponse as AuthResponse;
+    const authResponse = this.state.authResponse as AuthResponse;
     return (
         <div>
           <header className="App-header">
@@ -64,12 +64,12 @@ class App extends Component<AppState> {
     this.setState({showAuthenticationModal: false})
   }
 
-  private completeSignIn = (AuthResponse: AuthResponse) => {
-    this.setState({showAuthenticationModal: false, AuthResponse: AuthResponse})
+  private completeSignIn = (authResponse: AuthResponse) => {
+    this.setState({showAuthenticationModal: false, authResponse: authResponse})
   }
 
   private signOut = () => {
-    this.setState({AuthResponse: undefined})
+    this.setState({authResponse: undefined})
   };
 
   private initState() {
@@ -91,12 +91,12 @@ class App extends Component<AppState> {
   };
 
   private signInOutButtons = () => {
-    const AuthResponse = this.state.AuthResponse
-    if (AuthResponse) {
+    const authResponse = this.state.authResponse
+    if (authResponse) {
       return (<Container fluid>
             <Row className="align-items-center">
               <Col className="col-10">
-                <h5>Hello {AuthResponse.userName}</h5>
+                <h5>Hello {authResponse.userName}</h5>
               </Col>
               <Col className="col-2">
                 <Button variant="primary" size="lg" onClick={this.signOut}>Sign out</Button>
