@@ -11,10 +11,6 @@ import {PassBy, VerifiedAuthenticationResponseWithJWT} from "@sphereon/did-auth-
 import {RP} from "@sphereon/did-auth-siop/dist/main/RP";
 
 
-const HEX_KEY = "850e54b92c6291a1ff7b8c3ef30e032571ed77c9e5c78b1cd6ee5fec4fea984f";
-const DID = "did:ethr:0xe1dB95357A4258b33A994Fa8cBA5FdC6bd70011D";
-const KID = "did:ethr:0xe1dB95357A4258b33A994Fa8cBA5FdC6bd70011D#controller";
-
 class Server {
 
   public express: core.Express;
@@ -153,7 +149,7 @@ class Server {
     this.rp = RP.builder()
         .redirect(process.env.REDIRECT_URL_BASE + "/siop-sessions",)
         .requestBy(PassBy.VALUE)
-        .internalSignature(HEX_KEY, DID, KID)
+        .internalSignature(process.env.RP_PRIVATE_HEX_KEY, process.env.RP_DID, process.env.RP_DID + "#controller")
         .addDidMethod("ethr")
         .registrationBy(PassBy.VALUE)
         .build();
