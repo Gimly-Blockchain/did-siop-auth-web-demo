@@ -452,9 +452,10 @@
     tslib "^2.2.0"
     webcrypto-core "^1.2.0"
 
-"@sphereon/did-auth-siop@file:./lib/sphereon-did-auth-siop-v0.0.10.tgz":
-  version "0.0.1"
-  resolved "file:./lib/sphereon-did-auth-siop-v0.0.10.tgz#7d62b8b182c428cf42439a6c9bab00a106551c97"
+"@sphereon/did-auth-siop@0.0.1-alpha.0":
+  version "0.0.1-alpha.0"
+  resolved "https://nexus.qa.sphereon.com/repository/sphereon-private-npm/@sphereon/did-auth-siop/-/did-auth-siop-0.0.1-alpha.0.tgz#6d14194fcc7afebf9e0007554f8efd82fedb43eb"
+  integrity sha512-U08RaJEalg2DLnJ499TDYM+pv6fo522anRXoXAYLU4d9Yw70lCI/9wfPQKr4Ge6MdzVVztO7uuUURfHOkN7Asw==
   dependencies:
     "@sphereon/did-uni-client" "^0.2.0"
     "@transmute/did-key-ed25519" "^0.2.1-unstable.42"
