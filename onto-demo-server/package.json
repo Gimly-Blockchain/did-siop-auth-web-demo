@@ -25,6 +25,6 @@
   "devDependencies": {
     "@types/express": "^4.17.13",
     "@types/node": "^16.9.1",
-    "onto-demo-shared-types": "file:..\\onto-demo-shared-types\\"
+    "onto-demo-shared-types": "file:../onto-demo-shared-types"
   }
 }
