@@ -1,8 +1,9 @@
 {
   "name": "@sphereon/onto-demo-shared-types",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Shared types between modules",
   "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
   "author": "Sander Postma",
   "license": "ISC",
   "private": false,
