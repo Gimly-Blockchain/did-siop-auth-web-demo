@@ -16,6 +16,10 @@ export class StateMapping {
 
 
 export class AuthResponse {
+  constructor(userDID: string, userName: string) {
+    this.userDID = userDID;
+    this.userName = userName;
+  }
   userDID: string
   userName: string
   token?: string

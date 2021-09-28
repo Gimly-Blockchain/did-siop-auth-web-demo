@@ -1,7 +1,8 @@
 import {Button, Col, Container, Modal, Row} from "react-bootstrap"
 import AuthenticationQR from "./AuthenticationQR"
+import {AuthResponse} from "@sphereon/onto-demo-shared-types";
 import {Component} from "react"
-import {AuthResponse} from "onto-demo-shared-types"
+
 
 export type AuthenticationModalProps = {
   show?: boolean

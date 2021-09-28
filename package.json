@@ -7,7 +7,7 @@
     "install-shared-types": "cd onto-demo-shared-types && yarn install",
     "install-server": "cd onto-demo-server && yarn install",
     "install-client": "cd onto-demo-client && yarn install",
-    "install-all": "concurrently \"yarn install-shared-types\" \"yarn install-server\" \"yarn install-client\"",
+    "install-all": "yarn install-shared-types && yarn install-server && yarn install-client",
     "start-server": "cd onto-demo-server && yarn run start",
     "start-client": "cd onto-demo-client && yarn run start",
     "build-types": "cd onto-demo-shared-types && yarn run build",

@@ -2,13 +2,12 @@ import * as dotenv from "dotenv-flow"
 import express from "express"
 import {CookieOptions, Response} from "express/ts4.0"
 import cookieParser from "cookie-parser"
-import {QRVariables, StateMapping} from "onto-demo-shared-types/dist"
 import ExpiryMap from "expiry-map"
 import shortUUID from "short-uuid"
-import {AuthResponse} from "onto-demo-shared-types";
 import * as core from "express-serve-static-core";
 import {PassBy, VerifiedAuthenticationResponseWithJWT} from "@sphereon/did-auth-siop/dist/main/types/SIOP.types";
 import {RP} from "@sphereon/did-auth-siop/dist/main/RP";
+import {AuthResponse, QRVariables, StateMapping} from "@sphereon/onto-demo-shared-types";
 
 
 class Server {
@@ -164,9 +163,7 @@ class Server {
 
     if (stateMapping.pollCount > 2) {
       console.log("Poll mockup sending AuthResponse")
-      const authResponse: AuthResponse = new AuthResponse()
-      authResponse.userDID = "did:test-user"
-      authResponse.userName = "Mr. Test"
+      const authResponse: AuthResponse = new AuthResponse("did:test-user", "Mr. Test")
       response.statusCode = 200
       response.send(authResponse)
     } else {
