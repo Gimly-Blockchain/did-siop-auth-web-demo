@@ -23,7 +23,7 @@ export default class AuthenticationQR extends Component<AuthenticationQRProps> {
   private qrExpiryMs: number = 0
   private currentStateMapping?: StateMapping
   private timedOutRequestMappings: Set<StateMapping> = new Set<StateMapping>()
-  private isMounted: boolean = false
+  private _isMounted: boolean = false
 
 
   componentDidMount() {
@@ -34,14 +34,14 @@ export default class AuthenticationQR extends Component<AuthenticationQRProps> {
       })
       this.refreshTimerHandle = setTimeout(() => this.refreshQR(), this.qrExpiryMs)
     }
-    this.isMounted = true
+    this._isMounted = true
   }
 
   componentWillUnmount() {
     if (this.refreshTimerHandle) {
       clearTimeout(this.refreshTimerHandle)
     }
-    this.isMounted = false
+    this._isMounted = false
   }
 
   render() {
@@ -108,7 +108,7 @@ export default class AuthenticationQR extends Component<AuthenticationQRProps> {
   /* Poll the backend until we get a response, abort when the component is unloaded or the QR code expired */
   private pollForResponse = async (stateMapping: StateMapping) => {
     let pollingResponse = await axios.post("/backend/poll-auth-response", {stateId: stateMapping.stateId})
-    while (pollingResponse.status === 202 && this.isMounted && !this.timedOutRequestMappings.has(stateMapping)) {
+    while (pollingResponse.status === 202 && this._isMounted && !this.timedOutRequestMappings.has(stateMapping)) {
       if (this.state.qrCode && pollingResponse.data && pollingResponse.data.authRequestCreated) {
         this.setState({qrCode: undefined})
         this.props.onAuthRequestCreated()
