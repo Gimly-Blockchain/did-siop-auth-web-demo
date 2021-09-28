@@ -80,6 +80,7 @@ export default class AuthenticationQR extends Component<AuthenticationQRProps> {
     if (this.currentStateMapping) {
       this.timedOutRequestMappings.add(this.currentStateMapping)
     }
+    this.registerStateSent = false
     this.setState({qrCode: this.generateGimlyIDQRCode(this.state.qrVariables as QRVariables)})
     this.refreshTimerHandle = setTimeout(() => this.refreshQR(), this.qrExpiryMs)
   }
@@ -122,7 +123,7 @@ export default class AuthenticationQR extends Component<AuthenticationQRProps> {
     } else if (pollingResponse.status === 200) {
       this.props.onSignInComplete(pollingResponse.data as AuthResponse)
     } else {
-      throw Error(pollingResponse.data.message)
+      return Promise.reject(pollingResponse.data.message)
     }
   }
 }
