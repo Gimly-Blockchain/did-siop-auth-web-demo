@@ -2,7 +2,7 @@ import React, {Component} from "react"
 import GimlyIDQRCode, {QRContent, QRMode, QRType} from "@sphereon/gimlyid-qr-code"
 import axios from "axios"
 import Loader from "react-loader-spinner"
-import {AuthResponse, QRVariables, StateMapping} from "@sphereon/onto-demo-shared-types";
+import {AuthResponse, QRVariables, StateMapping} from "@sphereon/onto-demo-shared-types"
 
 export type AuthenticationQRProps = {
   onAuthRequestCreated: () => void
@@ -19,32 +19,40 @@ export default class AuthenticationQR extends Component<AuthenticationQRProps> {
   state: AuthenticationQRState = {}
 
   private registerStateSent: boolean = false
-  private refreshTimerHandle?: NodeJS.Timeout;
+  private refreshTimerHandle?: NodeJS.Timeout
   private qrExpiryMs: number = 0
   private currentStateMapping?: StateMapping
   private timedOutRequestMappings: Set<StateMapping> = new Set<StateMapping>()
+  private isMounted: boolean = false
 
 
   componentDidMount() {
     this.qrExpiryMs = parseInt(process.env.REACT_APP_QR_CODE_EXPIRES_AFTER_SEC) * 1000
     if (!this.state.qrCode) {
       this.getQRVariables().then(qrVariables => {
-        return this.setState({qrVariables: qrVariables, qrCode: this.generateGimlyIDQRCode(qrVariables)});
+        return this.setState({qrVariables: qrVariables, qrCode: this.generateGimlyIDQRCode(qrVariables)})
       })
       this.refreshTimerHandle = setTimeout(() => this.refreshQR(), this.qrExpiryMs)
     }
+    this.isMounted = true
   }
 
   componentWillUnmount() {
     if (this.refreshTimerHandle) {
       clearTimeout(this.refreshTimerHandle)
     }
+    this.isMounted = false
   }
 
   render() {
-    return this.state.qrCode ? this.state.qrCode : <Loader type="ThreeDots" color="#FEFF8AFF" height="100" width="100"/>
+    // Show the loader until we have details on which parameters to load into the QR code
+    return this.state.qrCode
+        ? this.state.qrCode
+        : <Loader type="ThreeDots" color="#FEFF8AFF" height="100" width="100"/>
   }
 
+  /* The GimlyIDQRCode component generates a random state id. Here we make sure it's created only once
+    and the render() function will reuse the same one every time it is called. */
   private generateGimlyIDQRCode(qrVariables: QRVariables) {
     return <GimlyIDQRCode
         type={QRType.AUTHENTICATION}
@@ -55,6 +63,7 @@ export default class AuthenticationQR extends Component<AuthenticationQRProps> {
     />
   }
 
+  /* Get the parameters that need to go into the QR code from the server. (We don't want to build/pack a new frontend version for every change to the QR code.) */
   private getQRVariables = async () => {
     const response = await axios.get("/backend/get-qr-variables")
     const body = await response.data
@@ -65,6 +74,7 @@ export default class AuthenticationQR extends Component<AuthenticationQRProps> {
     return body
   }
 
+  /* We don't want to keep used and unused states indefinitely, so expire the QR code after a configured timeout  */
   private refreshQR = () => {
     console.log("Timeout expired, refreshing QR code...")
     if (this.currentStateMapping) {
@@ -74,9 +84,10 @@ export default class AuthenticationQR extends Component<AuthenticationQRProps> {
     this.refreshTimerHandle = setTimeout(() => this.refreshQR(), this.qrExpiryMs)
   }
 
+  /* Register the state along with the redirect URL in the backend */
   private registerState = (qrContent: QRContent) => {
     if (this.registerStateSent) return
-    this.registerStateSent = true // FIXME gives a warning
+    this.registerStateSent = true
 
     const stateMapping: StateMapping = new StateMapping()
     stateMapping.requestorDID = qrContent.did
@@ -94,9 +105,10 @@ export default class AuthenticationQR extends Component<AuthenticationQRProps> {
         .catch(error => console.error("register-state failed", error))
   }
 
+  /* Poll the backend until we get a response, abort when the component is unloaded or the QR code expired */
   private pollForResponse = async (stateMapping: StateMapping) => {
     let pollingResponse = await axios.post("/backend/poll-auth-response", {stateId: stateMapping.stateId})
-    while (pollingResponse.status === 202 && !this.timedOutRequestMappings.has(stateMapping)) {
+    while (pollingResponse.status === 202 && this.isMounted && !this.timedOutRequestMappings.has(stateMapping)) {
       if (this.state.qrCode && pollingResponse.data && pollingResponse.data.authRequestCreated) {
         this.setState({qrCode: undefined})
         this.props.onAuthRequestCreated()

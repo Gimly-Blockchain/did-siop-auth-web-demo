@@ -3,6 +3,7 @@ import AuthenticationQR from "./AuthenticationQR"
 import {AuthResponse} from "@sphereon/onto-demo-shared-types";
 import {Component} from "react"
 
+/* This is a container dialog for the QR code component. It re emits the onSignInComplete callback.  */
 
 export type AuthenticationModalProps = {
   show?: boolean

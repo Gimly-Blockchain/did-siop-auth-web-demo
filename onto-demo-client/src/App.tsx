@@ -82,6 +82,7 @@ class App extends Component<AppState> {
   }
 
   private loadState = (storedState: string) => {
+    // eslint-disable-next-line react/no-direct-mutation-state
     this.state = jsonpack.unpack(storedState) as AppState
   };
 
@@ -108,7 +109,7 @@ class App extends Component<AppState> {
       return (<Container fluid>
             <Row>
               <Col className="col-10">
-                <h5/>
+                <p/>
               </Col>
               <Col className="col-2">
                 <Button variant="primary" size="lg" onClick={this.showLoginDialog}>Sign in</Button>
@@ -116,7 +117,6 @@ class App extends Component<AppState> {
             </Row>
           </Container>
       )
-      return
     }
   };
 }

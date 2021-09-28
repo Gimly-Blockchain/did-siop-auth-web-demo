@@ -8,9 +8,6 @@ export type ProtectedResourceProps = {
 
 
 export default class ProtectedResource extends Component<ProtectedResourceProps> {
-  constructor(props: ProtectedResourceProps) {
-    super(props)
-  }
 
 
   protected isAuthenticated(): boolean {
