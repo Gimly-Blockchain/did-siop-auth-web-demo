@@ -1,5 +1,5 @@
 import React, {Component} from "react"
-import GimlyIDQRCode, {QRContent, QRMode, QRType} from "gimlyid-qr-code"
+import GimlyIDQRCode, {QRContent, QRMode, QRType} from "@sphereon/gimlyid-qr-code"
 import axios from "axios"
 import Loader from "react-loader-spinner"
 import {AuthResponse, QRVariables, StateMapping} from "@sphereon/onto-demo-shared-types";
