@@ -6,7 +6,7 @@
 ### Getting started
 
 #### Configure environment
-In the onto-demo-server folder, create a files called .env.local and populate it using .env as example.
+In the **./onto-demo-server folder**, create a file called .env.local and populate it using .env as example.
 A valid config will look like this
 ```dotenv
 NODE_ENV=development
@@ -18,7 +18,7 @@ RP_PRIVATE_HEX_KEY=850e54b92c6291a1ff7b8c3ef30e032571ed77c9e5c78b1cd6ee5fec4fea9
 AUTH_REQUEST_EXPIRES_AFTER_SEC=300
 MOCK_AUTH_RESPONSE=false
 ```
-(Exception for the IP address this is a valid configuration to test with.)
+(Except for the IP address this is a valid configuration to test with.)
 
 
 #### Build & start

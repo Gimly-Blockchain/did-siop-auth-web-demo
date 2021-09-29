@@ -18,6 +18,7 @@ class Server {
 
   constructor() {
     dotenv.config()
+
     this.express = express()
     const port = process.env.PORT || 5000
     const secret = process.env.COOKIE_SIGNING_KEY
@@ -121,14 +122,16 @@ class Server {
 
     this.express.post("/ext/siop-sessions", (request, response) => {
           const authResponse = request.body;
-          const stateMapping: StateMapping = this.stateMap.get(authResponse.payload.state)
-          if (stateMapping === null) {
-            Server.sendErrorResponse(response, 500, "No request mapping could be found for the given stateId.")
-            return
-          }
-          this.rp.verifyAuthenticationResponseJwt(authResponse.jwt, {audience: authResponse.payload.aud})
+          const redirectURL = process.env.REDIRECT_URL_BASE + "/siop-sessions";
+          this.rp.verifyAuthenticationResponseJwt(authResponse.id_token, {audience: redirectURL})
               .then((verifiedResponse: VerifiedAuthenticationResponseWithJWT) => {
                 console.log("verifiedResponse: ", verifiedResponse)
+
+                const stateMapping: StateMapping = this.stateMap.get(verifiedResponse.payload.state)
+                if (stateMapping === null) {
+                  Server.sendErrorResponse(response, 500, "No request mapping could be found for the given stateId.")
+                  return
+                }
                 stateMapping.authResponse = {
                   token: verifiedResponse.jwt,
                   userDID: verifiedResponse.payload.did,
