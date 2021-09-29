@@ -1,13 +1,13 @@
 # Under Construction :construction:
 
-####This is a demo website to test and showcase the ["Sphereon Self Issued OpenID Provider v2 (SIOP)" library](https://github.com/Sphereon-Opensource/did-auth-siop) 
-
+#### This is a demo website to test and showcase the ["Sphereon Self Issued OpenID Provider v2 (SIOP)" library](https://github.com/Sphereon-Opensource/did-auth-siop)
 
 ### Getting started
 
 #### Configure environment
-In the **./onto-demo-server folder**, create a file called .env.local and populate it using .env as example.
-A valid config will look like this
+
+In the **./onto-demo-server folder**, create a file called .env.local and populate it using .env as example. A valid config will look like this
+
 ```dotenv
 NODE_ENV=development
 PORT=5001
@@ -18,11 +18,14 @@ RP_PRIVATE_HEX_KEY=850e54b92c6291a1ff7b8c3ef30e032571ed77c9e5c78b1cd6ee5fec4fea9
 AUTH_REQUEST_EXPIRES_AFTER_SEC=300
 MOCK_AUTH_RESPONSE=false
 ```
-(Except for the IP address this is a valid configuration to test with.)
 
+Except for the IP address this is a valid configuration to test with. You will need to replace it with the public IP interface/address where this
+server will be running and make sure it is accessible from your phone and the port is open in the firewall.
 
 #### Build & start
+
 From the root directory
+
 - yarn global add concurrently
 - yarn global add ts-node
 - yarn install-all
@@ -32,8 +35,10 @@ From the root directory
 The server will start on port 5001, the client will start & open a browser on http://localhost:3000/
 
 #### Usage
+
 Once the demo site has loaded, click "Sign in"
-A QR code will appear which can be scanned with the mobile authenticator app "[rn-did-siop-example-app](https://github.com/Sphereon-OpenSource/rn-did-siop-example-app)"
+A QR code will appear which can be scanned with the mobile authenticator
+app "[rn-did-siop-example-app](https://github.com/Sphereon-OpenSource/rn-did-siop-example-app)"
 After a successful login two extra page will appear in the menu navigation. 
 
 
