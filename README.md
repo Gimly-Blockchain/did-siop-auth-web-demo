@@ -41,4 +41,15 @@ A QR code will appear which can be scanned with the mobile authenticator
 app "[rn-did-siop-example-app](https://github.com/Sphereon-OpenSource/rn-did-siop-example-app)"
 After a successful login two extra page will appear in the menu navigation. 
 
+#### Docker
+From the root folder run:
+```bash
+docker build -t onto-web-demo .
+docker run -it -p 5001:5001 -p 3000:3000 onto-web-demo
+```
+### Docker compose
+From the root folder run:
+```bash
+docker-compose up
+```
 
