@@ -1,4 +1,4 @@
-import {AuthResponse} from "import {AuthResponse} from "@sphereon/onto-demo-shared-types"
+import {AuthResponse} from "@sphereon/onto-demo-shared-types"
 import React, {Component} from "react"
 import {isBlank} from "underscore.string"
 
