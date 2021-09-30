@@ -3,13 +3,13 @@ import React, {Component} from "react"
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
 import Button from "react-bootstrap/Button"
 import AuthenticationModal from "./components/AuthenticationModal"
-import {AuthResponse} from "../../onto-demo-shared-types";
+import {AuthResponse} from "@sphereon/onto-demo-shared-types"
 import jsonpack from "jsonpack"
-import Nav from "./components/Nav";
-import Landing from "./pages/Landing";
-import Secret from "./pages/Secret";
-import Classified from "./pages/Classified";
-import {Col, Container, Row} from "react-bootstrap";
+import Nav from "./components/Nav"
+import Landing from "./pages/Landing"
+import Secret from "./pages/Secret"
+import Classified from "./pages/Classified"
+import {Col, Container, Row} from "react-bootstrap"
 
 
 export type AppState = {
@@ -21,16 +21,16 @@ export type AppState = {
 class App extends Component<AppState> {
 
   state: AppState = {}
-  private readonly _stateStorageKey = "state-onto-app";
+  private readonly _stateStorageKey = "state-onto-app"
 
   constructor(props: AppState, context: any) {
-    super(props, context);
-    this.initState();
+    super(props, context)
+    this.initState()
   }
 
   render() {
-    this.saveState();
-    const authResponse = this.state.authResponse as AuthResponse;
+    this.saveState()
+    const authResponse = this.state.authResponse as AuthResponse
     return (
         <div>
           <header className="App-header">
@@ -70,12 +70,12 @@ class App extends Component<AppState> {
 
   private signOut = () => {
     this.setState({authResponse: undefined})
-  };
+  }
 
   private initState() {
     let storedState = sessionStorage.getItem(this._stateStorageKey)
     if (storedState != null) {
-      this.loadState(storedState);
+      this.loadState(storedState)
     } else {
       this.setState({showAuthenticationModal: false})
     }
@@ -84,12 +84,12 @@ class App extends Component<AppState> {
   private loadState = (storedState: string) => {
     // eslint-disable-next-line react/no-direct-mutation-state
     this.state = jsonpack.unpack(storedState) as AppState
-  };
+  }
 
 
   private saveState = () => {
     sessionStorage.setItem(this._stateStorageKey, jsonpack.pack(this.state))
-  };
+  }
 
   private signInOutButtons = () => {
     const authResponse = this.state.authResponse
@@ -118,7 +118,7 @@ class App extends Component<AppState> {
           </Container>
       )
     }
-  };
+  }
 }
 
 export default App

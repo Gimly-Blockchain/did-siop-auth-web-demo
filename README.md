@@ -18,9 +18,9 @@ RP_PRIVATE_HEX_KEY=850e54b92c6291a1ff7b8c3ef30e032571ed77c9e5c78b1cd6ee5fec4fea9
 AUTH_REQUEST_EXPIRES_AFTER_SEC=300
 MOCK_AUTH_RESPONSE=false
 ```
-
 Except for the IP address this is a valid configuration to test with. You will need to replace it with the public IP interface/address where this
 server will be running and make sure it is accessible from your phone and the port is open in the firewall.
+
 
 #### Build & start
 
