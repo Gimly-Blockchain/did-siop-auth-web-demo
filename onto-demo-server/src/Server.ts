@@ -41,7 +41,7 @@ class Server {
   private registerWebAppEndpoints() {
     this.express.get("/backend/get-qr-variables", (request, response) => {
       const qrVariables = new QRVariables()
-      qrVariables.requestorDID = process.env.REQUESTOR_DID
+      qrVariables.requestorDID = process.env.RP_DID
       qrVariables.redirectUrl = process.env.REDIRECT_URL_BASE + "/get-auth-request-url"
       response.send(qrVariables)
     })
