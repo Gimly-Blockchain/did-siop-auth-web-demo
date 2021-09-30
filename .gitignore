@@ -2,6 +2,9 @@
 
 # dependencies
 /node_modules
+onto-demo-client/node_modules
+onto-demo-server/node_modules
+onto-demo-shared-types/node_modules
 /.pnp
 .pnp.js
 
@@ -21,4 +24,10 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+onto-demo-client/yarn.lock
+onto-demo-server/yarn.lock
+onto-demo-shared-types/yarn.lock
+yarn.lock
+
+.idea
 

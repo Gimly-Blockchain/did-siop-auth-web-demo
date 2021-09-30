@@ -29,9 +29,6 @@
     "listFiles": false
     /* Print names of files part of the compilation. */,
     "pretty": true,
-    "types": [
-      "node"
-    ]
   },
   "include": [
     "src/**/*",
