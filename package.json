@@ -1,6 +1,6 @@
 {
-  "name": "@types/onto-web-demo",
-  "version": "1.0.0",
+  "name": "@spostma/onto-web-demo-root",
+  "version": "0.2.0",
   "main": "index.js",
   "license": "ISC",
   "scripts": {
