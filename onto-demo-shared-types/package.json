@@ -1,6 +1,6 @@
 {
   "name": "@spostma/onto-demo-shared-types",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Shared types between modules",
   "main": "dist/index.js",
   "author": "Sander Postma",
