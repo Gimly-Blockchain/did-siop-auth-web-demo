@@ -6,7 +6,7 @@
 <br>
 </h2>
 
-#### This is a demo website to test and showcase of the ["Self Issued OpenID Provider v2 (SIOP)" library](https://github.com/Sphereon-Opensource/did-auth-siop) using a style template of the [Copyrightly](https://copyrightly.rhizomik.net/) website.
+#### This is a demo website to test and showcase the ["Self Issued OpenID Provider v2 (SIOP)" library](https://github.com/Sphereon-Opensource/did-auth-siop).
 
 ### Getting started
 

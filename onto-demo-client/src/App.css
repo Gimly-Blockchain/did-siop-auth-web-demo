@@ -21,10 +21,7 @@
     align-items: end;
     font-size: calc(10px + 2vmin);
     color: white;
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-top: 4px;
-    padding-bottom: 4px;
+    padding: 4px 10px;
 }
 
 .App-link {
@@ -33,6 +30,7 @@
 
 .youTubeLink{
     color: #ffffff;
+    text-underline-style: none;
 }
 
 @keyframes App-logo-spin {

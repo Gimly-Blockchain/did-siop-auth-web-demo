@@ -1,7 +1,7 @@
 import {Button, Col, Container, Modal, Row} from "react-bootstrap"
 import AuthenticationQR from "./AuthenticationQR"
 import {Component} from "react"
-import {AuthResponse} from "@spostma/onto-demo-shared-types"
+import {AuthResponse} from "@gimly-blockchain/did-auth-siop-web-demo-shared"
 
 export type AuthenticationModalProps = {
   show?: boolean

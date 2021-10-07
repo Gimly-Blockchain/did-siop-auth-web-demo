@@ -3,7 +3,7 @@ import React, {Component} from "react"
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
 import Button from "react-bootstrap/Button"
 import AuthenticationModal from "./components/AuthenticationModal"
-import {AuthResponse} from "@spostma/onto-demo-shared-types"
+import {AuthResponse} from "@gimly-blockchain/did-auth-siop-web-demo-shared"
 import jsonpack from "jsonpack"
 import Nav from "./components/Nav";
 import Landing from "./pages/Landing";
@@ -96,15 +96,14 @@ class App extends Component<AppState> {
         if (authResponse) {
             return (<Container fluid>
                     <Row className="align-items-center">
-                        <Col className="2">
-                            <h5>Hello {authResponse.firstName} {authResponse.lastName}</h5>
+
+                        <Col className="col">
+                                <a className="youTubeLink" href={authResponse.youtubeChannelURL} target={"_blank"}><Image width={"40px;"} src={authResponse.youtubeChannelImageURL}/><b>{authResponse.youtubeChannelName}</b></a>
                         </Col>
-                        <Col className="col-8">
-                            <Image src="youTube.png"/>
-                            <a className="youTubeLink" href={authResponse.youtubeChannelURL}>
-                                <h6>{authResponse.youtubeChannelName}</h6></a>
+                        <Col className="col-1">
+                            <h5>Hi {authResponse.firstName} {authResponse.lastName}</h5>
                         </Col>
-                        <Col className="col-2">
+                        <Col className="col-1">
                             <Button variant="primary" size="lg" onClick={this.signOut}>Sign out</Button>
                         </Col>
                     </Row>
@@ -116,7 +115,7 @@ class App extends Component<AppState> {
                         <Col className="col-10">
                             <h5/>
                         </Col>
-                        <Col className="col-2">
+                        <Col className="col-1">
                             <Button variant="primary" size="lg" onClick={this.showLoginDialog}>Sign in</Button>
                         </Col>
                     </Row>

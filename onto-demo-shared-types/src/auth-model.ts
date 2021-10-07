@@ -19,8 +19,9 @@ export class AuthResponse {
   userDID: string
   firstName?: string
   lastName?: string
-  youtubeChannelName?: string
+  youtubeChannelName: string
   youtubeChannelId?: string
-  youtubeChannelURL?: string
+  youtubeChannelURL: string
+  youtubeChannelImageURL: string
   token?: string
 }

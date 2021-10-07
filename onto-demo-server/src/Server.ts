@@ -4,7 +4,7 @@ import {CookieOptions, Response} from "express/ts4.0"
 import cookieParser from "cookie-parser"
 import ExpiryMap from "expiry-map"
 import shortUUID from "short-uuid"
-import {AuthResponse, QRVariables, StateMapping} from "@spostma/onto-demo-shared-types";
+import {AuthResponse, QRVariables, StateMapping} from "@gimly-blockchain/did-auth-siop-web-demo-shared";
 import * as core from "express-serve-static-core";
 import {PresentationDefinition, Rules} from '@sphereon/pe-models';
 import {RP} from "@sphereon/did-auth-siop";
@@ -73,14 +73,12 @@ class Server {
         this.express.post("/backend/poll-auth-response", (request, response) => {
             const stateId: string = request.body.stateId as string
             const stateMapping: StateMapping = this.stateMap.get(stateId)
-            if (stateMapping === null) {
-                Server.sendErrorResponse(response, 500, "No authentication request mapping could be found for the given stateId.")
-                return
+            if (!stateMapping) {
+                return Server.sendErrorResponse(response, 500, "No authentication request mapping could be found for the given stateId.")
             }
             const sessionId: string = request.signedCookies.sessionId
             if (!stateMapping.sessionId || stateMapping.sessionId !== sessionId) {
-                Server.sendErrorResponse(response, 403, "Browser session violation!")
-                return
+                return Server.sendErrorResponse(response, 403, "Browser session violation!")
             }
 
             if ("true" == process.env.MOCK_AUTH_RESPONSE && "development" == process.env.NODE_ENV) {
@@ -88,10 +86,10 @@ class Server {
             } else {
                 if (stateMapping.authResponse == null) {
                     response.statusCode = 202
-                    response.send({authRequestCreated: stateMapping.authRequestCreated})
+                    return response.send({authRequestCreated: stateMapping.authRequestCreated})
                 } else {
                     response.statusCode = 200
-                    response.send(stateMapping.authResponse)
+                    return response.send(stateMapping.authResponse)
                 }
             }
         })
@@ -115,15 +113,15 @@ class Server {
                     nonce,
                     state: stateId
                 }).then(requestURI => {
-                    response.statusCode = 200
-                    response.send(requestURI.encodedUri)
                     stateMapping.authRequestCreated = true
+                    response.statusCode = 200
+                    return response.send(requestURI.encodedUri)
                 }).catch((e: Error) => {
                     console.error(e, e.stack)
-                    Server.sendErrorResponse(response, 500, "Could not create an authentication request URI: " + e.message)
+                    return Server.sendErrorResponse(response, 500, "Could not create an authentication request URI: " + e.message)
                 })
             } else {
-                Server.sendErrorResponse(response, 403, "State id unknown")
+                return Server.sendErrorResponse(response, 403, "State id unknown")
             }
         })
 
@@ -132,18 +130,18 @@ class Server {
                 const authResponse = parseJWT(jwt);
                 const stateMapping: StateMapping = this.stateMap.get(authResponse.payload.state)
                 if (stateMapping === null) {
-                    Server.sendErrorResponse(response, 500, "No request mapping could be found for the given stateId.")
-                    return
+                    return Server.sendErrorResponse(response, 500, "No request mapping could be found for the given stateId.")
                 }
 
                 this.rp.verifyAuthenticationResponseJwt(jwt, {audience: authResponse.payload.aud as string})
                     .then((verifiedResponse: VerifiedAuthenticationResponseWithJWT) => {
                         console.log("verifiedResponse: ", verifiedResponse)
-                        const verifiableCredentials = verifiedResponse.payload.vp_token.presentation.verifiableCredential;
-                        if(verifiableCredentials && verifiableCredentials.length) {
-                            const credentialSubject = verifiableCredentials[0].credentialSubject;
+                        // The vp_token only contains 1 presentation max (the id_token can contaim multiple VPs)
+                        const verifiableCredential = verifiedResponse.payload.vp_token.presentation.verifiableCredential;
+                        if(verifiableCredential) {
+                            const credentialSubject = verifiableCredential[0].credentialSubject;
                             const youtubeChannelOwner = credentialSubject['YoutubeChannelOwner']
-                            if(youtubeChannelOwner) {
+                            if (youtubeChannelOwner) {
                                 stateMapping.authResponse = {
                                     token: verifiedResponse.jwt,
                                     userDID: verifiedResponse.payload.did,
@@ -155,7 +153,7 @@ class Server {
                             response.statusCode = 500
                             response.statusMessage = 'Missing YoutubeChannelOwner credential subject'
                         }
-                        response.send()
+                        return response.send()
                     })
                     .catch(reason => {
                         console.error("verifyAuthenticationResponseJwt failed:", reason)
@@ -168,6 +166,7 @@ class Server {
     private buildPresentationDefinition() {
         const presentationDefinitions: PresentationDefinition = {
             id: "9449e2db-791f-407c-b086-c21cc677d2e0",
+            purpose: "You can login if you are a Youtube channel owner",
             submission_requirements: [{
                 name: "YoutubeChannelOwner",
                 rule: Rules.Pick,
@@ -176,6 +175,7 @@ class Server {
             }],
             input_descriptors: [{
                 id: "YoutubeChannelOwner",
+                purpose: "The channel ownership needs to be asserted by Youtube",
                 name: "YoutubeChannelOwner",
                 group: ["A"],
                 schema: [{uri: "https://sphereon-opensource.github.io/vc-contexts/gimly/youtube/youtube-channel-owner.jsonld"}]
@@ -219,7 +219,7 @@ class Server {
                 stateMapping.pollCount++
                 console.log("Poll mockup sending 202 response, pollCount=", stateMapping.pollCount)
                 response.statusCode = 202
-                response.send()
+                return response.send()
             })
         }
     }
