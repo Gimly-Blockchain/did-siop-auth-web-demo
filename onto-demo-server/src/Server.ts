@@ -6,9 +6,13 @@ import ExpiryMap from "expiry-map"
 import shortUUID from "short-uuid"
 import {AuthResponse, QRVariables, StateMapping} from "@spostma/onto-demo-shared-types";
 import * as core from "express-serve-static-core";
-import {PassBy, VerifiedAuthenticationResponseWithJWT} from "@spostma/did-auth-siop/dist/main/types/SIOP.types";
 import {PresentationDefinition, Rules} from '@sphereon/pe-models';
-import {RP} from "@spostma/did-auth-siop/dist/main/RP";
+import {RP} from "@sphereon/did-auth-siop";
+import {
+  PassBy,
+  PresentationLocation,
+  VerifiedAuthenticationResponseWithJWT
+} from "@sphereon/did-auth-siop/dist/main/types/SIOP.types";
 
 
 class Server {
@@ -108,8 +112,7 @@ class Server {
 
         this.rp.createAuthenticationRequest({
           nonce,
-          state: stateId,
-          presentationDefinition: this.buildPresentationDefinition()
+          state: stateId
         }).then(requestURI => {
           response.statusCode = 200
           response.send(requestURI.encodedUri)
@@ -174,6 +177,10 @@ class Server {
         .internalSignature(process.env.RP_PRIVATE_HEX_KEY, process.env.RP_DID, process.env.RP_DID + "#controller")
         .addDidMethod("ethr")
         .registrationBy(PassBy.VALUE)
+        .addPresentationDefinitionClaim({
+          location: PresentationLocation.VP_TOKEN,
+          definition: this.buildPresentationDefinition()
+        })
         .build();
   }
 
