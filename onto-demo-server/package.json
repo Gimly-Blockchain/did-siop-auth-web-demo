@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@sphereon/did-auth-siop": "^0.2.0",
-    "@spostma/onto-demo-shared-types": "^0.2.1",
+    "@spostma/onto-demo-shared-types": "^0.2.6",
     "ajv": "^8.6.3",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",

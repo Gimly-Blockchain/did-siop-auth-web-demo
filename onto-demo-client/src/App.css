@@ -31,6 +31,10 @@
     color: #61dafb;
 }
 
+.youTubeLink{
+    color: #ffffff;
+}
+
 @keyframes App-logo-spin {
     from {
         transform: rotate(0deg);

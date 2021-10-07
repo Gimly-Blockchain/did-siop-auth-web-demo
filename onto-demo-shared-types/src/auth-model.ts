@@ -17,6 +17,10 @@ export class StateMapping {
 
 export class AuthResponse {
   userDID: string
-  userName: string
+  firstName?: string
+  lastName?: string
+  youtubeChannelName?: string
+  youtubeChannelId?: string
+  youtubeChannelURL?: string
   token?: string
 }
