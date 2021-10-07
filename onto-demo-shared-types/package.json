@@ -1,17 +1,20 @@
 {
   "name": "@spostma/onto-demo-shared-types",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Shared types between modules",
   "main": "dist/index.js",
-  "types": "dist/main/index.d.ts",
+  "typings": "dist/index.d.ts",
   "author": "Sander Postma",
   "license": "ISC",
   "private": false,
   "dependencies": {},
   "scripts": {
-    "build": "tsc -p tsconfig.json"
+    "build": "tsc -b"
   },
   "devDependencies": {
     "@types/typescript": "^2.0.0"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }
