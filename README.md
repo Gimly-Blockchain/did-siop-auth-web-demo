@@ -1,6 +1,12 @@
-# Under Construction :construction:
+<h2 style="text-align: center; vertical-align: middle">
+    <center><a href="https://www.gimly.io/"><img src="https://avatars.githubusercontent.com/u/64525639?s=200&v=4" alt="Gimly" width="120" style="vertical-align: middle"></a> &nbsp;and &nbsp; <a href="https://www.sphereon.com"><img src="https://sphereon.com/content/themes/sphereon/assets/img/logo.svg" alt="Sphereon" width="320" style="vertical-align: middle" ></a></center>
 
-#### This is a demo website to test and showcase the ["Sphereon Self Issued OpenID Provider v2 (SIOP)" library](https://github.com/Sphereon-Opensource/did-auth-siop)
+<br>Gimly / Sphereon Ontochain Demo Website      
+<br>
+<br>
+</h2>
+
+#### This is a demo website to test and showcase the ["Self Issued OpenID Provider v2 (SIOP)" library](https://github.com/Sphereon-Opensource/did-auth-siop).
 
 ### Getting started
 
@@ -25,7 +31,6 @@ server will be running and make sure it is accessible from your phone and the po
 #### Build & start
 
 From the root directory
-
 - yarn global add concurrently
 - yarn global add ts-node
 - yarn install-all

@@ -1,8 +1,8 @@
 {
-  "name": "@types/onto-web-demo",
-  "version": "1.0.0",
+  "name": "@gimly-blockchain/did-auth-siop-web-demo-root",
+  "version": "0.1.0",
   "main": "index.js",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "scripts": {
     "install-shared-types": "cd onto-demo-shared-types && yarn install",
     "install-server": "cd onto-demo-server && yarn install",

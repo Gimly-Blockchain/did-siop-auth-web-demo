@@ -1,11 +1,10 @@
 {
-  "name": "onto-demo-client",
+  "name": "@gimly-blockchain/did-auth-siop-web-demo-client",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "dependencies": {
-    "@sphereon/did-auth-siop": "^0.0.1-temp-sp1",
-    "@sphereon/gimlyid-qr-code": "^0.1.0",
-    "@sphereon/onto-demo-shared-types": "^0.1.3",
+    "@gimly-blockchain/gimlyid-qr-code-generator": "^0.2.0",
+    "@gimly-blockchain/did-auth-siop-web-demo-shared": "^0.1.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",

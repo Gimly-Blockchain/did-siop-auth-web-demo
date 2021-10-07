@@ -1,4 +1,4 @@
-import {AuthResponse} from "@sphereon/onto-demo-shared-types"
+import {AuthResponse} from "@gimly-blockchain/did-auth-siop-web-demo-shared"
 import React, {Component} from "react"
 import {isBlank} from "underscore.string"
 

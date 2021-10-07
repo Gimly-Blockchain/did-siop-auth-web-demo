@@ -7,7 +7,7 @@ export default class Landing extends Component {
         <div className="App">
           <img src={logo} className="App-logo" alt="logo"/>
           <p>
-            ONTO QR code authentication demo using SIOP
+            QR code authentication demo using SIOP v2
           </p>
         </div>
     )

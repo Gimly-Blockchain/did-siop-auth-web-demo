@@ -1,7 +1,7 @@
 import {Button, Col, Container, Modal, Row} from "react-bootstrap"
 import AuthenticationQR from "./AuthenticationQR"
-import {AuthResponse} from "@sphereon/onto-demo-shared-types";
 import {Component} from "react"
+import {AuthResponse} from "@gimly-blockchain/did-auth-siop-web-demo-shared"
 
 /* This is a container dialog for the QR code component. It re emits the onSignInComplete callback.  */
 
