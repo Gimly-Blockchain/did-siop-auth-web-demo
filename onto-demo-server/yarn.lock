@@ -364,10 +364,10 @@
     "@ethersproject/properties" "^5.4.0"
     "@ethersproject/strings" "^5.4.0"
 
-"@gimly-blockchain/did-auth-siop-web-demo-shared@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@gimly-blockchain/did-auth-siop-web-demo-shared/-/did-auth-siop-web-demo-shared-0.1.0.tgz#179f9bcc9fd7d183dab19dbdbf5d7c4da16bfd32"
-  integrity sha512-HkJbDEepcSG96A6Cq59HmP/l7L2+otaBCmwoEfsSf5DvMrNhof42R9lQqFs5LNNk2TfrQ8XkO5YY/7S2EIu/CQ==
+"@gimly-blockchain/did-auth-siop-web-demo-shared@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@gimly-blockchain/did-auth-siop-web-demo-shared/-/did-auth-siop-web-demo-shared-0.1.1.tgz#292205f9da797365a56a8b6af7c35b3c4b45121e"
+  integrity sha512-J/buBxRa/rWrYi9CdQCTwAqM2vqnfCa+FAzmUnKajlWiyOBiCUedUtY4Nj73/3sWktSp3vVJVmtaNvyaTeCCgg==
 
 "@peculiar/asn1-schema@^2.0.32", "@peculiar/asn1-schema@^2.0.38":
   version "2.0.38"

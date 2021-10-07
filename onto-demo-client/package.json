@@ -5,7 +5,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@gimly-blockchain/gimlyid-qr-code-generator": "^0.2.0",
-    "@gimly-blockchain/did-auth-siop-web-demo-shared": "^0.1.0",
+    "@gimly-blockchain/did-auth-siop-web-demo-shared": "^0.1.1",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",

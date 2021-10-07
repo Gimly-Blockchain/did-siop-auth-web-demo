@@ -1239,10 +1239,10 @@
   resolved "https://registry.yarnpkg.com/@gar/promisify/-/promisify-1.1.2.tgz#30aa825f11d438671d585bd44e7fd564535fc210"
   integrity sha512-82cpyJyKRoQoRi+14ibCeGPu0CwypgtBAdBhq1WfvagpCZNKqwXbKwXllYSMG91DhmG4jt9gN8eP6lGOtozuaw==
 
-"@gimly-blockchain/did-auth-siop-web-demo-shared@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@gimly-blockchain/did-auth-siop-web-demo-shared/-/did-auth-siop-web-demo-shared-0.1.0.tgz#179f9bcc9fd7d183dab19dbdbf5d7c4da16bfd32"
-  integrity sha512-HkJbDEepcSG96A6Cq59HmP/l7L2+otaBCmwoEfsSf5DvMrNhof42R9lQqFs5LNNk2TfrQ8XkO5YY/7S2EIu/CQ==
+"@gimly-blockchain/did-auth-siop-web-demo-shared@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@gimly-blockchain/did-auth-siop-web-demo-shared/-/did-auth-siop-web-demo-shared-0.1.1.tgz#292205f9da797365a56a8b6af7c35b3c4b45121e"
+  integrity sha512-J/buBxRa/rWrYi9CdQCTwAqM2vqnfCa+FAzmUnKajlWiyOBiCUedUtY4Nj73/3sWktSp3vVJVmtaNvyaTeCCgg==
 
 "@gimly-blockchain/gimlyid-qr-code-generator@^0.2.0":
   version "0.2.0"
