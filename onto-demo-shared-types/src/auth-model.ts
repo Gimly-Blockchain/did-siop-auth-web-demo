@@ -20,6 +20,7 @@ export class AuthResponse {
     this.userDID = userDID;
     this.userName = userName;
   }
+  userName: string
   userDID: string
   firstName?: string
   lastName?: string
