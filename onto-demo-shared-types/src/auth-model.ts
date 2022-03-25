@@ -21,6 +21,7 @@ export class AuthResponse {
     this.userName = userName;
   }
   userDID: string
+  userName?: string
   firstName?: string
   lastName?: string
   youtubeChannelName: string
