@@ -1,9 +1,11 @@
 import * as dotenv from "dotenv-flow"
 import express from "express"
+import { Request } from "express";
 import {CookieOptions, Response} from "express/ts4.0"
 import cookieParser from "cookie-parser"
 import ExpiryMap from "expiry-map"
 import shortUUID from "short-uuid"
+import cors from "cors";
 import {AuthResponse, QRVariables, StateMapping} from "@gimly-blockchain/did-auth-siop-web-demo-shared";
 import * as core from "express-serve-static-core";
 import {PresentationDefinition, Rules} from '@sphereon/pe-models';
@@ -30,6 +32,7 @@ class Server {
     const secret = process.env.COOKIE_SIGNING_KEY
     this.stateMap = new ExpiryMap(parseInt(process.env.AUTH_REQUEST_EXPIRES_AFTER_SEC) * 1000)
     const bodyParser = require("body-parser")
+    this.express.use(cors<Request>());
     this.express.use(bodyParser.urlencoded({extended: true}))
     this.express.use(bodyParser.json())
     this.express.use(cookieParser(secret))
