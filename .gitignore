@@ -48,3 +48,6 @@ Thumbs.db
 *.mov
 *.wmv
 
+# serverless config files
+onto-demo-client/.serverless/
+onto-demo-server/.serverless/
