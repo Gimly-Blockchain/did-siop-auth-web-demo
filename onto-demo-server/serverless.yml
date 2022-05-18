@@ -1,0 +1,29 @@
+service: did-demo-server
+
+provider:
+ name: aws
+ runtime: nodejs12.x
+ memorySize: 256
+ timeout: 10
+ stage: production
+ region: eu-west-2
+ environment:
+  NODE_ENV: production
+  PORT: 5000
+  COOKIE_SIGNING_KEY: 8E5er6YyAO6dIrDTm7BXYWsafBSLxzjb
+  REDIRECT_URL_BASE: https://ri4mad0921.execute-api.eu-west-2.amazonaws.com/production/ext
+  RP_DID: did:ethr:0xe1dB95357A4258b33A994Fa8cBA5FdC6bd70011D
+  RP_PRIVATE_HEX_KEY: 850e54b92c6291a1ff7b8c3ef30e032571ed77c9e5c78b1cd6ee5fec4fea984f
+  AUTH_REQUEST_EXPIRES_AFTER_SEC: 300
+
+
+plugins:
+  - serverless-plugin-typescript-express 
+  - serverless-plugin-typescript 
+
+functions:
+ api:
+   handler: lambda.handler
+   events:
+     - http: ANY {proxy+}
+     - http: ANY /
