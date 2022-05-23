@@ -17,12 +17,12 @@ import {
     VerifiedAuthenticationResponseWithJWT
 } from "@sphereon/did-auth-siop/dist/main/types/SIOP.types";
 
+let memoryMap = {};
 
 class Server {
 
-    public express: core.Express;
-    private stateMap: ExpiryMap<string, StateMapping>;
-    private rp: RP;
+  public express: core.Express;
+  private rp: RP;
 
   constructor() {
     dotenv.config()
@@ -30,14 +30,12 @@ class Server {
     this.express = express()
     const port = process.env.PORT || 5000
     const secret = process.env.COOKIE_SIGNING_KEY
-    this.stateMap = new ExpiryMap(parseInt(process.env.AUTH_REQUEST_EXPIRES_AFTER_SEC) * 1000)
     const bodyParser = require("body-parser")
     this.express.use(cors<Request>());
     this.express.use(bodyParser.urlencoded({extended: true}))
     this.express.use(bodyParser.json())
     this.express.use(cookieParser(secret))
     this.express.listen(port as number, "0.0.0.0", () => console.log(`Listening on port ${port}`))
-
         this.buildRP();
         this.registerWebAppEndpoints()
         this.registerSIOPEndpoint()
@@ -64,10 +62,13 @@ class Server {
                     signed: true,
                     httpOnly: true
                 }
-                response.cookie("sessionId", sessionId, options).send({authenticated: true})
+                response.cookie("sessionId", sessionId, options).send({
+                    authenticated: true,
+                    sessionId
+               })
             }
             stateMapping.sessionId = sessionId
-            this.stateMap.set(stateMapping.stateId, stateMapping)
+            memoryMap[stateMapping.stateId] = stateMapping
             console.log("Received AuthRequestMapping", stateMapping)
             response.statusCode = 200
             response.send()
@@ -76,11 +77,11 @@ class Server {
 
         this.express.post("/backend/poll-auth-response", (request, response) => {
             const stateId: string = request.body.stateId as string
-            const stateMapping: StateMapping = this.stateMap.get(stateId)
+            const stateMapping: StateMapping = memoryMap[stateId]
             if (!stateMapping) {
                 return Server.sendErrorResponse(response, 500, "No authentication request mapping could be found for the given stateId.")
             }
-            const sessionId: string = request.signedCookies.sessionId
+            const sessionId: string = request.body.sessionId as string
             if (!stateMapping.sessionId || stateMapping.sessionId !== sessionId) {
                 return Server.sendErrorResponse(response, 403, "Browser session violation!")
             }
@@ -90,7 +91,7 @@ class Server {
             } else {
                 if (stateMapping.authResponse == null) {
                     response.statusCode = 202
-                    return response.send({authRequestCreated: stateMapping.authRequestCreated})
+                     return response.send({authRequestCreated: stateMapping.authRequestCreated})
                 } else {
                     response.statusCode = 200
                     return response.send(stateMapping.authResponse)
@@ -108,11 +109,10 @@ class Server {
     private registerSIOPEndpoint() {
         this.express.get("/ext/get-auth-request-url", (request, response) => {
             const stateId = request.query["stateId"] as string
-            const stateMapping: StateMapping = this.stateMap.get(stateId);
+            const stateMapping: StateMapping = memoryMap[stateId]
             if (stateMapping) {
                 let nonce = shortUUID.generate();
                 console.log(`Nonce: ${nonce}`)
-
                 this.rp.createAuthenticationRequest({
                     nonce,
                     state: stateId
@@ -131,8 +131,9 @@ class Server {
 
         this.express.post("/ext/siop-sessions", (request, response) => {
                 const jwt = request.body.id_token;
+
                 const authResponse = parseJWT(jwt);
-                const stateMapping: StateMapping = this.stateMap.get(authResponse.payload.state)
+                const stateMapping: StateMapping = memoryMap[authResponse.payload.state]
                 if (stateMapping === null) {
                     return Server.sendErrorResponse(response, 500, "No request mapping could be found for the given stateId.")
                 }

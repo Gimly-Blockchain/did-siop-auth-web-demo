@@ -12,7 +12,8 @@
   "private": false,
   "dependencies": {
     "@gimly-blockchain/did-auth-siop-web-demo-shared": "^0.1.0",
-    "@sphereon/did-auth-siop": "^0.2.0",
+    "@sphereon/did-auth-siop": "^0.2.1",
+    "@sphereon/pe-models": "^0.0.5",
     "@types/aws-serverless-express": "^3.0.1",
     "@types/compression": "^0.0.35",
     "@types/cors": "^2.8.3",
