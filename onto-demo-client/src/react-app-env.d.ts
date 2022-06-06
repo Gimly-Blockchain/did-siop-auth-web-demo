@@ -5,7 +5,8 @@ declare global {
     interface ProcessEnv {
       NODE_ENV: 'development' | 'production';
       PORT?: string;
-      REACT_APP_QR_CODE_EXPIRES_AFTER_SEC : '300';
+      REACT_APP_QR_CODE_EXPIRES_AFTER_SEC : string;
+      REACT_APP_BACKEND_URL: string;
     }
   }
 }

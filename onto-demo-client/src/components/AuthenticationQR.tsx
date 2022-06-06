@@ -4,6 +4,8 @@ import axios from "axios"
 import Loader from "react-loader-spinner"
 import {AuthResponse, QRVariables, StateMapping} from "@gimly-blockchain/did-auth-siop-web-demo-shared"
 
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL
+
 export type AuthenticationQRProps = {
   onAuthRequestCreated: () => void
   onSignInComplete: (AuthResponse: AuthResponse) => void
@@ -24,6 +26,7 @@ export default class AuthenticationQR extends Component<AuthenticationQRProps> {
   private currentStateMapping?: StateMapping
   private timedOutRequestMappings: Set<StateMapping> = new Set<StateMapping>()
   private _isMounted: boolean = false
+  private sessionId: string = ''
 
 
   componentDidMount() {
@@ -65,7 +68,7 @@ export default class AuthenticationQR extends Component<AuthenticationQRProps> {
 
   /* Get the parameters that need to go into the QR code from the server. (We don't want to build/pack a new frontend version for every change to the QR code.) */
   private getQRVariables = async () => {
-    const response = await axios.get("/backend/get-qr-variables")
+    const response = await axios.get(`${BACKEND_URL}/backend/get-qr-variables`)
     const body = await response.data
 
     if (response.status !== 200) {
@@ -94,12 +97,12 @@ export default class AuthenticationQR extends Component<AuthenticationQRProps> {
     stateMapping.requestorDID = qrContent.did
     stateMapping.redirectUrl = qrContent.redirectUrl
     stateMapping.stateId = qrContent.state
-    axios.post("/backend/register-state", stateMapping)
+    axios.post(`${BACKEND_URL}/backend/register-state`, stateMapping)
         .then(response => {
-          console.log("register-state response status", response.status)
           if (response.status !== 200) {
             throw Error(response.data.message)
           }
+          this.sessionId = response.data.sessionId
           this.currentStateMapping = stateMapping
           this.pollForResponse(stateMapping)
         })
@@ -108,17 +111,18 @@ export default class AuthenticationQR extends Component<AuthenticationQRProps> {
 
   /* Poll the backend until we get a response, abort when the component is unloaded or the QR code expired */
   private pollForResponse = async (stateMapping: StateMapping) => {
-    let pollingResponse = await axios.post("/backend/poll-auth-response", {stateId: stateMapping.stateId})
+    let pollingResponse = await axios.post(`${BACKEND_URL}/backend/poll-auth-response`, {stateId: stateMapping.stateId, sessionId: this.sessionId})
     while (pollingResponse.status === 202 && this._isMounted && !this.timedOutRequestMappings.has(stateMapping)) {
       if (this.state.qrCode && pollingResponse.data && pollingResponse.data.authRequestCreated) {
         this.setState({qrCode: undefined})
         this.props.onAuthRequestCreated()
       }
-      pollingResponse = await axios.post("/backend/poll-auth-response", {stateId: stateMapping.stateId})
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      pollingResponse = await axios.post(`${BACKEND_URL}/backend/poll-auth-response`, {stateId: stateMapping.stateId, sessionId: this.sessionId})
     }
     if (this.timedOutRequestMappings.has(stateMapping)) {
       console.log("Cancelling timed out auth request.")
-      await axios.post("/backend/cancel-auth-request", {stateId: stateMapping.stateId})
+      await axios.post(`${BACKEND_URL}/backend/cancel-auth-request`, {stateId: stateMapping.stateId})
       this.timedOutRequestMappings.delete(stateMapping)
     } else if (pollingResponse.status === 200) {
       this.props.onSignInComplete(pollingResponse.data as AuthResponse)
