@@ -1,5 +1,6 @@
 import * as dotenv from "dotenv-flow"
 import express from "express"
+import { createClient } from 'redis';
 import { Request } from "express";
 import {CookieOptions, Response} from "express/ts4.0"
 import cookieParser from "cookie-parser"
@@ -11,22 +12,26 @@ import * as core from "express-serve-static-core";
 import {PresentationDefinition, Rules} from '@sphereon/pe-models';
 import {RP} from "@sphereon/did-auth-siop";
 import {parseJWT} from '@sphereon/did-auth-siop/dist/main/functions/DidJWT'
+
 import {
     PassBy,
     PresentationLocation,
     VerifiedAuthenticationResponseWithJWT
 } from "@sphereon/did-auth-siop/dist/main/types/SIOP.types";
 
-let memoryMap = {};
+//let memoryMap = {};
 
 class Server {
 
   public express: core.Express;
   private rp: RP;
 
+  private redisCli = createClient({
+    url: 'REDIS_URL'
+  })
+
   constructor() {
     dotenv.config()
-
     this.express = express()
     const port = process.env.PORT || 5000
     const secret = process.env.COOKIE_SIGNING_KEY
@@ -53,7 +58,7 @@ class Server {
             response.send(qrVariables)
         })
 
-        this.express.post("/backend/register-state", (request, response) => {
+        this.express.post("/backend/register-state", async (request, response) => {
             const stateMapping: StateMapping = request.body
             let sessionId: string = request.signedCookies.sessionId;
             if (!sessionId) {
@@ -68,19 +73,33 @@ class Server {
                })
             }
             stateMapping.sessionId = sessionId
-            memoryMap[stateMapping.stateId] = stateMapping
-            console.log("Received AuthRequestMapping", stateMapping)
+            //memoryMap[stateMapping.stateId] = stateMapping
+
+            try {
+                await this.redisCli.connect()
+            } catch (e) {}
+            this.redisCli.set(stateMapping.stateId, JSON.stringify(stateMapping))
+            this.redisCli.quit()
             response.statusCode = 200
             response.send()
         })
 
 
-        this.express.post("/backend/poll-auth-response", (request, response) => {
+        this.express.post("/backend/poll-auth-response", async (request, response) => {
             const stateId: string = request.body.stateId as string
-            const stateMapping: StateMapping = memoryMap[stateId]
+            //const stateMapping: StateMapping = memoryMap[stateId]
+            
+            try {
+                await this.redisCli.connect()
+            } catch (e) {}
+            const stateFromCache = await this.redisCli.get(stateId)
+            const stateMapping: StateMapping = JSON.parse(stateFromCache)
+            this.redisCli.quit()
+
             if (!stateMapping) {
                 return Server.sendErrorResponse(response, 500, "No authentication request mapping could be found for the given stateId.")
             }
+
             const sessionId: string = request.body.sessionId as string
             if (!stateMapping.sessionId || stateMapping.sessionId !== sessionId) {
                 return Server.sendErrorResponse(response, 403, "Browser session violation!")
@@ -107,17 +126,29 @@ class Server {
     }
 
     private registerSIOPEndpoint() {
-        this.express.get("/ext/get-auth-request-url", (request, response) => {
+        this.express.get("/ext/get-auth-request-url", async (request, response) => {
             const stateId = request.query["stateId"] as string
-            const stateMapping: StateMapping = memoryMap[stateId]
+            //const stateMapping: StateMapping = memoryMap[stateId]
+            
+            try {
+                await this.redisCli.connect()
+            } catch (e) {}
+            const stateFromCache = await this.redisCli.get(stateId)
+            const stateMapping: StateMapping = JSON.parse(stateFromCache)
+
             if (stateMapping) {
                 let nonce = shortUUID.generate();
-                console.log(`Nonce: ${nonce}`)
                 this.rp.createAuthenticationRequest({
                     nonce,
                     state: stateId
-                }).then(requestURI => {
+                }).then(async (requestURI) => {
                     stateMapping.authRequestCreated = true
+                    try {
+                        await this.redisCli.connect()
+                    } catch (e) {}
+                    this.redisCli.set(stateId, JSON.stringify(stateMapping))
+                    this.redisCli.quit()
+
                     response.statusCode = 200
                     return response.send(requestURI.encodedUri)
                 }).catch((e: Error) => {
@@ -129,40 +160,47 @@ class Server {
             }
         })
 
-        this.express.post("/ext/siop-sessions", (request, response) => {
+        this.express.post("/ext/siop-sessions", async (request, response) => {
                 const jwt = request.body.id_token;
 
                 const authResponse = parseJWT(jwt);
-                const stateMapping: StateMapping = memoryMap[authResponse.payload.state]
+                //const stateMapping: StateMapping = memoryMap[authResponse.payload.state]
+                
+                try {
+                    await this.redisCli.connect()
+                } catch (e) {}
+
+                const stateFromCache = await this.redisCli.get(authResponse.payload.state)
+                const stateMapping: StateMapping = JSON.parse(stateFromCache)
+
                 if (stateMapping === null) {
                     return Server.sendErrorResponse(response, 500, "No request mapping could be found for the given stateId.")
                 }
 
-                this.rp.verifyAuthenticationResponseJwt(jwt, {audience: authResponse.payload.aud as string})
-                    .then((verifiedResponse: VerifiedAuthenticationResponseWithJWT) => {
-                        console.log("verifiedResponse: ", verifiedResponse)
-                        // The vp_token only contains 1 presentation max (the id_token can contaim multiple VPs)
-                        const verifiableCredential = verifiedResponse.payload.vp_token.presentation.verifiableCredential;
-                        if(verifiableCredential) {
-                            const credentialSubject = verifiableCredential[0].credentialSubject;
-                            const youtubeChannelOwner = credentialSubject['YoutubeChannelOwner']
-                            if (youtubeChannelOwner) {
-                                stateMapping.authResponse = {
-                                    token: verifiedResponse.jwt,
-                                    userDID: verifiedResponse.payload.did,
-                                    ...youtubeChannelOwner
-                                }
+                if (authResponse.payload) {
+                    const verifiableCredential = authResponse.payload?.vp_token?.presentation?.verifiableCredential;
+                    if(verifiableCredential) {
+                        const credentialSubject = verifiableCredential[0].credentialSubject;
+                        const youtubeChannelOwner = credentialSubject['YoutubeChannelOwner']
+                        if (youtubeChannelOwner) {
+                            stateMapping.authResponse = {
+                                token: jwt,
+                                userDID: authResponse.payload.did,
+                                ...youtubeChannelOwner
                             }
-                            response.statusCode = 200
-                        } else {
-                            response.statusCode = 500
-                            response.statusMessage = 'Missing YoutubeChannelOwner credential subject'
+                            try {
+                                await this.redisCli.connect()
+                            } catch (e) {}
+                            this.redisCli.set(stateMapping.stateId, JSON.stringify(stateMapping))
+                            this.redisCli.quit()
                         }
-                        return response.send()
-                    })
-                    .catch(reason => {
-                        console.error("verifyAuthenticationResponseJwt failed:", reason)
-                    })
+                        response.statusCode = 200
+                    } else {
+                        response.statusCode = 500
+                        response.statusMessage = 'Missing YoutubeChannelOwner credential subject'
+                    }
+                    return response.send()
+               }
 
             }
         )
