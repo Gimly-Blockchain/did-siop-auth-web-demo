@@ -2,7 +2,7 @@ service: did-demo-server
 
 provider:
  name: aws
- runtime: nodejs12.x
+ runtime: nodejs16.x
  memorySize: 256
  timeout: 10
  stage: production
