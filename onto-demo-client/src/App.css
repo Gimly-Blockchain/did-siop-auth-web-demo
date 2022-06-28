@@ -2,6 +2,19 @@
     text-align: center;
     padding: 40px;
 }
+.Landing {
+    text-align: center;
+    padding: 40px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+.Screen {
+    padding: 40px;
+    width:  100%;
+}
 
 .App-logo {
     height: 40vmin;
@@ -40,4 +53,26 @@
     to {
         transform: rotate(360deg);
     }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.spinnerBox {
+    display: inline-block;
+    transform: translateY(3px);
+    width: auto !important;
+}
+.Landing .btn-sm {
+    margin-top: 5px;
+    float: right;
+}
+.center-content {
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    text-align: center;
 }

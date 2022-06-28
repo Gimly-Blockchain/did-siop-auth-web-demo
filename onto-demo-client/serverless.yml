@@ -7,7 +7,8 @@ provider:
  timeout: 10
  stage: production
  region: eu-west-2
-
+ environment:
+   BACKEND_URL:
 
 plugins:
     - serverless-s3-sync

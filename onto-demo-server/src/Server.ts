@@ -12,7 +12,9 @@ import * as core from "express-serve-static-core";
 import {PresentationDefinition, Rules} from '@sphereon/pe-models';
 import {RP} from "@sphereon/did-auth-siop";
 import {parseJWT} from '@sphereon/did-auth-siop/dist/main/functions/DidJWT'
-
+import {signCredential, verfyCredential, signPresentation, verifyPresentation} from './signing'
+import {getVc} from './utils'
+import {NewCredentialProps} from './types'
 import {
     PassBy,
     PresentationLocation,
@@ -123,9 +125,57 @@ class Server {
                 // TODO
             }
         )
+
+        this.express.post("/backend/request-vc", async (request, response) => {
+            const data: NewCredentialProps = request.body as NewCredentialProps
+            const session = `${Date.now()}`
+            try {
+                await this.redisCli.connect()
+            } catch (e) {}
+            this.redisCli.set(session, JSON.stringify(data))
+            this.redisCli.quit()
+            const redirectUrl = process.env.REDIRECT_URL_BASE + "/generate-vc"
+            response.send({redirectUrl, session, issuer: data.adminLoginType})
+        })
+
     }
 
     private registerSIOPEndpoint() {
+        this.express.post("/ext/generate-vc", async (request, response) => {
+            const postData: {session: string, did: string, vp: any} = request.body as {session: string, did: string, vp: any}
+            
+            /* first verify presentation */
+            const vpVerification = await verifyPresentation(postData.vp)
+            if (!vpVerification.verified) {
+                return Server.sendErrorResponse(response, 500, "Could not verify the presentation")
+            }
+
+            /* then generate new VC */
+            try {
+                await this.redisCli.connect()
+            } catch (e) {}
+            const dataRaw = await this.redisCli.get(postData.session)
+            const data = JSON.parse(dataRaw)
+            this.redisCli.del(postData.session);
+            if (data) {
+                const vc = getVc(postData.did, data)
+                const verifiableCredential = await signCredential(vc)
+                response.send({verifiableCredential})
+            } {
+                response.send()
+            }
+        })
+
+        this.express.get("/ext/vc-status", async (request, response) => {
+            const sesId = request.query["sesId"] as string
+            try {
+                await this.redisCli.connect()
+            } catch (e) {}
+            const dataRaw = await this.redisCli.get(sesId)
+            const status = dataRaw ? 'pending' : 'done'
+            response.send({status})
+        })
+
         this.express.get("/ext/get-auth-request-url", async (request, response) => {
             const stateId = request.query["stateId"] as string
             //const stateMapping: StateMapping = memoryMap[stateId]
@@ -181,12 +231,12 @@ class Server {
                     const verifiableCredential = authResponse.payload?.vp_token?.presentation?.verifiableCredential;
                     if(verifiableCredential) {
                         const credentialSubject = verifiableCredential[0].credentialSubject;
-                        const youtubeChannelOwner = credentialSubject['YoutubeChannelOwner']
-                        if (youtubeChannelOwner) {
+                        const subject = credentialSubject['Employee'] || credentialSubject['HotelGuest']
+                        if (subject) {
                             stateMapping.authResponse = {
                                 token: jwt,
                                 userDID: authResponse.payload.did,
-                                ...youtubeChannelOwner
+                                ...subject
                             }
                             try {
                                 await this.redisCli.connect()
@@ -197,7 +247,7 @@ class Server {
                         response.statusCode = 200
                     } else {
                         response.statusCode = 500
-                        response.statusMessage = 'Missing YoutubeChannelOwner credential subject'
+                        response.statusMessage = 'Missing credential subject'
                     }
                     return response.send()
                }
@@ -209,19 +259,36 @@ class Server {
     private buildPresentationDefinition() {
         const presentationDefinitions: PresentationDefinition = {
             id: "9449e2db-791f-407c-b086-c21cc677d2e0",
-            purpose: "You can login if you are a Youtube channel owner",
+            purpose: "You can login if you are an employee",
             submission_requirements: [{
-                name: "YoutubeChannelOwner",
+                name: "HotelGuest",
+                rule: Rules.Pick,
+                count: 1,
+                from: "A"
+            },
+            {
+                name: "Employee",
                 rule: Rules.Pick,
                 count: 1,
                 from: "A"
             }],
             input_descriptors: [{
-                id: "YoutubeChannelOwner",
-                purpose: "The channel ownership needs to be asserted by Youtube",
-                name: "YoutubeChannelOwner",
+                id: "HotelGuest",
+                purpose: "The ownership needs to be asserted by an authority",
+                name: "HotelGuest",
                 group: ["A"],
-                schema: [{uri: "https://sphereon-opensource.github.io/vc-contexts/gimly/youtube/youtube-channel-owner.jsonld"}]
+                schema: [
+                    {uri: "https://gimly-blockchain.github.io/vc-contexts/hotel-guest-context.jsonld"}
+               ]
+            },
+            {
+                id: "Employee",
+                purpose: "The ownership needs to be asserted by an authority",
+                name: "Employee",
+                group: ["A"],
+                schema: [
+                    {uri: "https://gimly-blockchain.github.io/vc-contexts/employee-context.jsonld"}
+               ]
             }]
         }
         return presentationDefinitions;

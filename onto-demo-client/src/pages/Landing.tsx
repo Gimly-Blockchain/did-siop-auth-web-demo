@@ -1,14 +1,27 @@
 import React, {Component} from "react";
-import logo from "../logo.svg";
+import {Row} from "react-bootstrap"
+import Button from "react-bootstrap/Button"
+import {AuthResponse} from "@gimly-blockchain/did-auth-siop-web-demo-shared"
 
-export default class Landing extends Component {
+type LandingState = {
+    showLoginDialog: () => void
+    showLogin: () => void
+    authResponse: AuthResponse
+}
+
+export default class Landing extends Component<LandingState> {
+
+  constructor(props: LandingState, context: any) {
+      super(props, context)
+  }
+
   render() {
     return (
-        <div className="App">
-          <img src={logo} className="App-logo" alt="logo"/>
-          <p>
-            QR code authentication demo using SIOP v2
-          </p>
+        <div className="Landing">
+            {!this.props.authResponse && (<Row>
+              <Button variant="primary" size="sm" onClick={this.props.showLoginDialog}>Sign in</Button>
+              <Button variant="outline-primary" size="sm" onClick={this.props.showLogin}>Admin Login</Button>
+            </Row>)}
         </div>
     )
   }

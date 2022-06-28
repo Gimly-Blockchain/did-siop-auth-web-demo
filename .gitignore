@@ -51,3 +51,6 @@ Thumbs.db
 # serverless config files
 onto-demo-client/.serverless/
 onto-demo-server/.serverless/
+
+# backend files
+onto-demo-server/src/keys.ts
