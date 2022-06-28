@@ -230,7 +230,12 @@ class Server {
                 if (authResponse.payload) {
                     const verifiableCredential = authResponse.payload?.vp_token?.presentation?.verifiableCredential;
                     if(verifiableCredential) {
-                        const credentialSubject = verifiableCredential[0].credentialSubject;
+                        const vc = verifiableCredential[0]
+                        const vcVerification = await verfyCredential(vc)
+                        if (!vcVerification.verified) {
+                            return Server.sendErrorResponse(response, 500, "Could not verify the credential")
+                        }
+                        const credentialSubject = vc.credentialSubject;
                         const subject = credentialSubject['Employee'] || credentialSubject['HotelGuest']
                         if (subject) {
                             stateMapping.authResponse = {
