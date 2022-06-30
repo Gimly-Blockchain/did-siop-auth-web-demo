@@ -29,7 +29,7 @@ class Server {
   private rp: RP;
 
   private redisCli = createClient({
-    url: 'REDIS_URL'
+    url: process.env.REDIS_URL
   })
 
   constructor() {

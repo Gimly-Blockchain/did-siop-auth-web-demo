@@ -43,7 +43,7 @@ const AuthorityLoginModal = ({
 
   return <Modal show={show} animation={false}>
       <Modal.Header className="modal-header">
-        <Modal.Title>Admin Login</Modal.Title>
+        <Modal.Title>Issuer Service Login</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Container>

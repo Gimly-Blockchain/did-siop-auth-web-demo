@@ -20,7 +20,7 @@ export default class Landing extends Component<LandingState> {
         <div className="Landing">
             {!this.props.authResponse && (<Row>
               <Button variant="primary" size="sm" onClick={this.props.showLoginDialog}>Sign in</Button>
-              <Button variant="outline-primary" size="sm" onClick={this.props.showLogin}>Admin Login</Button>
+              <Button variant="outline-primary" size="sm" onClick={this.props.showLogin}>Issuer Service</Button>
             </Row>)}
         </div>
     )

@@ -176,24 +176,19 @@ const Authority = () => {
 			              	<Form.Label>Security clearance level</Form.Label>
 											<Form.Control as="select" value={form.securityClearanceLevel} onChange={e => onChangeForm("securityClearanceLevel", e.target.value)}>
 											  <option>Choose level</option>
-											  <option value="A1">A1</option>
-											  <option value="B1">B1</option>
-											  <option value="B2">B2</option>
-											  <option value="B3">B3</option>
-											  <option value="C1">C1</option>
-											  <option value="C2">C2</option>
-											  <option value="C3">C3</option>
-											  <option value="C4">C4</option>
+											  <option value="1">1</option>
+											  <option value="2">2</option>
+											  <option value="3">3</option>
 											</Form.Control>
 										</Form.Group>
 		                <Form.Text className="text-muted">
-		                  The employee company department
+		                  The employee clearance level
 		                </Form.Text>
 		                
 			              <Form.Group className="mb-3" controlId="department">
-			              	<Form.Label>Employee department</Form.Label>
+			              	<Form.Label>Employee's company department</Form.Label>
 											<Form.Control as="select" value={form.department} onChange={e => onChangeForm("department", e.target.value)}>
-											  <option>Your employee department</option>
+											  <option>Select the employee's company department</option>
 											  <option value="Sales">Sales</option>
 											  <option value="HHRR">HHRR</option>
 											  <option value="TI">TI</option>
@@ -202,7 +197,7 @@ const Authority = () => {
 											</Form.Control>
 										</Form.Group>
 		                <Form.Text className="text-muted">
-		                  The employee company department
+		                  The employee's company department
 		                </Form.Text>
 
 									</Fragment>)}
@@ -328,7 +323,7 @@ const Authority = () => {
 					    </Fragment>)}		
 	 						{ vc && (<Fragment>
 					    <Alert key="primary" variant="primary">
-					      Now, please allow the credential holder to read this QR to link the verified credential to its SSI agent.
+					      Now, please allow the credential holder to read this QR to link the verifiable credential to its SSI agent.
 					    </Alert> 							
 	 						</Fragment>)}
 	 						{ vc && <QRCode value={vc} /> }
