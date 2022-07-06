@@ -15,7 +15,7 @@
     "@digitalcredentials/ed25519-verification-key-2020": "^3.2.2",
     "@digitalcredentials/jsonld": "git+https://github.com/digitalcredentials/jsonld.js",
     "@digitalcredentials/vc": "^1.1.2",
-    "@gimly-blockchain/did-auth-siop-web-demo-shared": "^0.1.0",
+    "@gimly-blockchain/did-auth-siop-web-demo-shared": "^0.1.1",
     "@sphereon/did-auth-siop": "^0.2.1",
     "@sphereon/did-uni-client": "^0.4.0",
     "@sphereon/pe-models": "^0.0.5",

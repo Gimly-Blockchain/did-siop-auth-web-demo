@@ -1,6 +1,6 @@
 {
   "name": "@gimly-blockchain/did-auth-siop-web-demo-shared",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Shared types between modules",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
