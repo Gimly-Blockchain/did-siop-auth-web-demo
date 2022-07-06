@@ -2,14 +2,11 @@
     <center>
         <a href="https://www.gimly.io/"><img src="https://avatars.githubusercontent.com/u/64525639?s=200&v=4" alt="Gimly" width="120" style="vertical-align: middle"></a>
     </center>
-
-    <br>
-    SIOP v2 Demo Website
-    <br>
-    <br>
 </h2>
 
-#### This is a demo website to test and showcase the ["Self Issued OpenID Provider v2 (SIOP)" library](https://github.com/Sphereon-Opensource/did-auth-siop).
+# SIOP v2 Demo Website
+
+This is a demo website to test and showcase the ["Self Issued OpenID Provider v2 (SIOP)" library](https://github.com/Sphereon-Opensource/did-auth-siop).
 
 ### Getting started
 
