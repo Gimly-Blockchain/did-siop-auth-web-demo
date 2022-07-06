@@ -8,8 +8,6 @@
 
 This is a demo website to test and showcase the ["Self Issued OpenID Provider v2 (SIOP)" library](https://github.com/Sphereon-Opensource/did-auth-siop).
 
-Demo: https://youtu.be/cqoKuQWPj-s
-
 ### Getting started
 
 #### Configure environment
