@@ -11,7 +11,8 @@ export default class Nav extends ProtectedResource {
             style={{
               padding: "10px",
               width: "10em",
-              height: "50em",
+              height: "auto",
+              minHeight: "calc(100vh - 40px)",
               background: "#f0f0f0"
             }}
         >

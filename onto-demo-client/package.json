@@ -58,6 +58,7 @@
     "@types/react-dom": "^17.0.9",
     "@types/react-router": "^5.1.16",
     "@types/react-router-dom": "^5.1.9",
-    "@types/underscore.string": "^0.0.38"
+    "@types/underscore.string": "^0.0.38",
+    "serverless-s3-sync": "^3.0.0"
   }
 }
